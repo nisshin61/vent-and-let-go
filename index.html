@@ -259,6 +259,12 @@
     <!-- Right Control Bar -->
     <div class="flex items-center space-x-2 sm:space-x-3">
       
+      <!-- Targeted Therapy Hub Button -->
+      <button id="therapyHubBtn" class="glass-btn px-3 py-1.5 rounded-full text-xs text-rose-300 hover:text-white flex items-center space-x-1.5" title="จิตวิทยาบำบัดตรงจุดตามอารมณ์">
+        <span>🌱</span>
+        <span>บำบัดตรงจุด</span>
+      </button>
+
       <!-- Breathing Guide Toggle -->
       <button id="breathToggleBtn" class="glass-btn px-3 py-1.5 rounded-full text-xs text-slate-300 flex items-center space-x-1.5" title="เปิด/ปิด วงแหวนนำฝึกจังหวะการหายใจ">
         <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -455,13 +461,23 @@
     </div>
 
     <!-- Before Mood Check-in -->
-    <div id="beforeMoodBar" class="flex flex-wrap items-center justify-center gap-1.5 mb-3.5 zen-hide transition-all duration-500 text-xs">
-      <span class="text-[11px] text-slate-500 font-light mr-1">สำรวจใจตอนนี้:</span>
-      <button class="mood-opt px-2.5 py-1 rounded-full border border-white/5 bg-white/5 hover:border-violet-500/40 text-slate-300 transition" data-mood="suffocated">🌧️ อึดอัดใจ</button>
-      <button class="mood-opt px-2.5 py-1 rounded-full border border-white/5 bg-white/5 hover:border-violet-500/40 text-slate-300 transition" data-mood="anxious">🌪️ ว้าวุ่น/กังวล</button>
-      <button class="mood-opt px-2.5 py-1 rounded-full border border-white/5 bg-white/5 hover:border-violet-500/40 text-slate-300 transition" data-mood="hurt">💔 เจ็บปวด/เศร้า</button>
-      <button class="mood-opt px-2.5 py-1 rounded-full border border-white/5 bg-white/5 hover:border-violet-500/40 text-slate-300 transition" data-mood="exhausted">🔋 หมดพลัง</button>
-      <button class="mood-opt px-2.5 py-1 rounded-full border border-white/5 bg-white/5 hover:border-violet-500/40 text-slate-300 transition" data-mood="angry">🔥 คับแค้นใจ</button>
+    <div id="beforeMoodBar" class="flex flex-col items-center justify-center mb-3.5 zen-hide transition-all duration-500 text-xs">
+      <div class="flex flex-wrap items-center justify-center gap-1.5">
+        <span class="text-[11px] text-slate-500 font-light mr-1">สำรวจใจตอนนี้:</span>
+        <button class="mood-opt px-2.5 py-1 rounded-full border border-white/5 bg-white/5 hover:border-violet-500/40 text-slate-300 transition" data-mood="suffocated">🌧️ อึดอัดใจ</button>
+        <button class="mood-opt px-2.5 py-1 rounded-full border border-white/5 bg-white/5 hover:border-violet-500/40 text-slate-300 transition" data-mood="anxious">🌪️ ว้าวุ่น/กังวล</button>
+        <button class="mood-opt px-2.5 py-1 rounded-full border border-white/5 bg-white/5 hover:border-violet-500/40 text-slate-300 transition" data-mood="hurt">💔 เจ็บปวด/เศร้า</button>
+        <button class="mood-opt px-2.5 py-1 rounded-full border border-white/5 bg-white/5 hover:border-violet-500/40 text-slate-300 transition" data-mood="exhausted">🔋 หมดพลัง</button>
+        <button class="mood-opt px-2.5 py-1 rounded-full border border-white/5 bg-white/5 hover:border-violet-500/40 text-slate-300 transition" data-mood="angry">🔥 คับแค้นใจ</button>
+      </div>
+      <!-- Tailored Therapy Tip Pill -->
+      <div id="therapyMoodTip" class="mt-2 hidden">
+        <button id="openTailoredTherapyBtn" class="text-[11px] text-rose-300 hover:text-white flex items-center space-x-1.5 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 transition">
+          <span>💡</span>
+          <span id="therapyTipText">ดูวิธีบำบัดทางจิตวิทยาสำหรับอารมณ์นี้</span>
+          <span>→</span>
+        </button>
+      </div>
     </div>
 
     <!-- Text Area Container with Floating Glow -->
@@ -943,6 +959,18 @@
         if (moodPlaceholders[mood] && !isStreamMode) {
           ventInput.placeholder = moodPlaceholders[mood];
         }
+        currentTherapyCategory = mood;
+        if (therapyMoodTip) {
+          therapyMoodTip.classList.remove('hidden');
+          const moodNames = {
+            angry: "ความโกรธ/คับแค้นใจ 🔥",
+            anxious: "ความกังวล/คิดวน 🌪️",
+            hurt: "ความเศร้า/เจ็บปวด 💔",
+            exhausted: "ความเหนื่อยล้า/หมดไฟ 🔋",
+            suffocated: "ความอึดอัด/พูดไม่ออก 🌧️"
+          };
+          if (therapyTipText) therapyTipText.textContent = `ดูวิธีบำบัดทางจิตวิทยาสำหรับ ${moodNames[mood] || "อารมณ์นี้"}`;
+        }
         playAsmrKeystroke();
       });
     });
@@ -975,6 +1003,298 @@
         }, 5000);
       });
     });
+
+    // --- TARGETED THERAPY TOOLKIT (EVIDENCE-BASED PSYCHOLOGY) ---
+    const THERAPY_MODULES = {
+      angry: {
+        title: "บำบัดเมื่อรู้สึกโกรธหรือคับแค้นใจ (Anger & Frustration)",
+        desc: "ความโกรธทำให้หัวใจเต้นเร็วและกล้ามเนื้อเกร็งตัว เทคนิคเหล่านี้ช่วยระบายอะดรีนาลีนและนำความเยือกเย็นกลับคืนสู่สมอง",
+        tools: [
+          {
+            icon: "💨",
+            name: "เทคนิคเป่าลมลดอุณหภูมิความโกรธ (Physiological Sigh)",
+            science: "Somatic Vagus Nerve Regulation: สูดหายใจเข้า 2 ครั้งติดกัน (ยาว 1 สั้น 1) แล้วเป่าลมออกทางปากยาวๆ 6 วินาที ช่วยปรับอัตราการเต้นของหัวใจให้ช้าลงใน 60 วินาที",
+            actionLabel: "เริ่มฝึกเป่าลมดับโกรธ (1 นาที)",
+            actionType: "breathing_sigh"
+          },
+          {
+            icon: "🔥",
+            name: "พิธีกรรมเผาไหม้เป็นเถ้าถ่าน (Burn to Embers Ritual)",
+            science: "Cathartic Release: สลับรูปแบบการสลายตัวของข้อความเป็น 'ประกายไฟมอดดับ (Embers)' พิมพ์ความโกรธออกมาให้หมด แล้วปล่อยให้ไฟมอดเป็นเถ้าในความมืด",
+            actionLabel: "สลับเป็นธีมประกายไฟทันที",
+            actionType: "set_embers_theme"
+          },
+          {
+            icon: "⚖️",
+            name: "CBT: แยกความจริงออกจากความคิดโกรธ (Fact vs. Story)",
+            science: "Cognitive Re-appraisal: ความโกรธมักเกิดจาก 'เรื่องเล่าที่สมองเติมแต่ง' ถามตัวเอง: 'เรื่องที่เกิดขึ้นจริงๆ 100% คืออะไร และส่วนไหนคือสิ่งที่เราคาดเดาเจตนาของเขา?'",
+            actionLabel: "ใช้คำถามนี้สะท้อนใจ",
+            actionType: "set_prompt_cbt_anger"
+          }
+        ]
+      },
+      anxious: {
+        title: "บำบัดเมื่อรู้สึกกังวลหรือคิดวนไม่หยุด (Anxiety & Overthinking)",
+        desc: "ความกังวลมักเกิดจากสมองพยายามควบคุมอนาคต เทคนิคเหล่านี้ช่วยดึงสติกลับมาอยู่กับปัจจุบันขณะ",
+        tools: [
+          {
+            icon: "🖐️",
+            name: "ดึงสติสู่ประสาทสัมผัส 5-4-3-2-1 (Somatic Grounding)",
+            science: "Gold standard psychotherapy: มองเห็น 5 สิ่ง, สัมผัส 4 สิ่ง, ได้ยิน 3 สิ่ง, รับรู้กลิ่น 2 สิ่ง, และรับรู้ลมหายใจ 1 สิ่ง สกัดกั้นอาการแพนิคทันที",
+            actionLabel: "เริ่มทำ Grounding 5-4-3-2-1",
+            actionType: "start_grounding"
+          },
+          {
+            icon: "🍃",
+            name: "เทคนิคใบไม้ลอยน้ำ (Leaves on a Stream - ACT)",
+            science: "Acceptance & Commitment Therapy: มองความคิดกังวลเป็นเพียง 'ใบไม้ที่ลอยผ่านสายน้ำ' เราไม่จำเป็นต้องกระโดดลงไปสู้ แค่นั่งมองมันลอยลับไป",
+            actionLabel: "ใช้เทคนิคใบไม้ลอยน้ำ",
+            actionType: "set_prompt_act_leaves"
+          },
+          {
+            icon: "⏹️",
+            name: "กล่องลมหายใจสงบนิ่ง (Box Breathing 4-4-4-4)",
+            science: "Navy SEAL technique: หายใจเข้า 4s - กลั้น 4s - ผ่อนออก 4s - พัก 4s เพื่อรีเซ็ตระบบประสาทอัตโนมัติ (Parasympathetic System)",
+            actionLabel: "เปิดวงแหวนฝึกหายใจ",
+            actionType: "open_breathing"
+          }
+        ]
+      },
+      hurt: {
+        title: "บำบัดเมื่อรู้สึกเศร้า เจ็บปวด หรือโดดเดี่ยว (Sadness & Grief)",
+        desc: "ความเศร้าคือสัญญาณว่าสิ่งนั้นสำคัญต่อเรา การบำบัดไม่ใช่การฝืนเข้มแข็ง แต่คือการโอบกอดตัวเองอย่างอ่อนโยน",
+        tools: [
+          {
+            icon: "🫂",
+            name: "สัมผัสแห่งความเมตตาต่อตนเอง (Self-Compassion Touch)",
+            science: "Kristin Neff's MSC: วางฝ่ามือลงบนหัวอกหรือกอดตัวเองเบาๆ สัมผัสความอบอุ่น แล้วพูดในใจ: 'ตอนนี้เจ็บปวดจังเลยนะ แต่ฉันจะอยู่ตรงนี้เคียงข้างเธอ'",
+            actionLabel: "ใช้คำปลอบประโลมใจ",
+            actionType: "set_prompt_self_compassion"
+          },
+          {
+            icon: "🧸",
+            name: "คุยกับเด็กน้อยในใจที่กำลังเสียใจ (Inner Child Comfort)",
+            science: "Inner Child Therapy: หากเด็กน้อยในตัวคุณกำลังร้องไห้เรื่องนี้ คุณจะพูดอะไรเพื่อกอดและปลอบประโลมเขา?",
+            actionLabel: "พิมพ์กอดเด็กน้อยในใจ",
+            actionType: "set_prompt_inner_child"
+          },
+          {
+            icon: "⭐",
+            name: "ปลูกดวงดาวแห่งความหวัง (Gratitude Anchor)",
+            science: "Positive Neuroplasticity: เติมความหวังเล็กๆ 1 เรื่อง เพื่อไม่ให้จิตใจจมดิ่งลงสู่ความว่างเปล่า",
+            actionLabel: "ส่งดาวแห่งความหวัง",
+            actionType: "open_gratitude"
+          }
+        ]
+      },
+      exhausted: {
+        title: "บำบัดเมื่อรู้สึกเหนื่อยล้าหรือหมดไฟ (Burnout & Exhaustion)",
+        desc: "แบตเตอรี่ในใจของคุณกำลังเหลือน้อย คุณไม่จำเป็นต้องแก้ไขอะไรตอนนี้ สิ่งเดียวที่ต้องทำคือการพักผ่อน",
+        tools: [
+          {
+            icon: "🛑",
+            name: "ใบอนุญาตหยุดพัก (Permission to Pause)",
+            science: "Mindful Acceptance: อนุญาตให้ตัวเอง 'ยอมแพ้ชั่วคราว' วางหน้าที่และความคาดหวังลง 15 นาที โลกใบนี้จะยังหมุนต่อไปได้แม้คุณจะพัก",
+            actionLabel: "ยอมรับและอนุญาตให้ตัวเองพัก",
+            actionType: "set_prompt_permission"
+          },
+          {
+            icon: "🌊",
+            name: "โหมดหมึกเลือนไหล (Stream Writing)",
+            science: "Emotional Unloading: พิมพ์ทุกอย่างให้ไหลออกจากหัวโดยไม่ต้องอ่านทวน ไม่ต้องคิดเรื่องถูกผิด",
+            actionLabel: "เปิดโหมดหมึกเลือนไหลทันที",
+            actionType: "enable_stream_mode"
+          },
+          {
+            icon: "🎵",
+            name: "ฟังคลื่นความถี่ 432Hz Alpha Waves",
+            science: "Acoustic Healing: คลื่นเสียงความถี่ต่ำช่วยกล่อมอารมณ์ให้เข้าสู่ภาวะผ่อนคลายลึก (Deep Relaxation)",
+            actionLabel: "เปิดเสียงบำบัด 432Hz",
+            actionType: "play_drone_sound"
+          }
+        ]
+      },
+      suffocated: {
+        title: "บำบัดเมื่อรู้สึกอึดอัดหรือพูดไม่ออก (Suffocated & Unspoken)",
+        desc: "บางความรู้สึกไม่สามารถพูดกับใครในชีวิตจริงได้ พื้นที่ตรงนี้คือความลับที่ปลอดภัย 100%",
+        tools: [
+          {
+            icon: "✉️",
+            name: "จดหมายที่ไม่มีวันส่ง (Unsent Letter to the Void)",
+            science: "Expressive Writing Paradigm: เขียนความจริงทุกอย่างที่คุณอยากพูดกับใครคนนั้นโดยไม่ต้องสนใจมารยาท แล้วปล่อยให้ระเหยไปในความมืด",
+            actionLabel: "เริ่มเขียนจดหมายระบาย",
+            actionType: "set_prompt_unsent_letter"
+          },
+          {
+            icon: "🫗",
+            name: "เทน้ำออกจากแก้ว (Empty the Cup)",
+            science: "จิตใจที่มีเรื่องอึดอัดสะสมเหมือนแก้วที่น้ำล้น พิมพ์ทุกสิ่งที่ผุดขึ้นมาคำต่อคำ แล้วมองดูมันสลายตัวไป",
+            actionLabel: "เริ่มเทความอึดอัดทิ้ง",
+            actionType: "set_prompt_empty_cup"
+          }
+        ]
+      }
+    };
+
+    const therapyModal = document.getElementById('therapyModal');
+    const therapyHubBtn = document.getElementById('therapyHubBtn');
+    const closeTherapyModalBtn = document.getElementById('closeTherapyModalBtn');
+    const therapyContentContainer = document.getElementById('therapyContentContainer');
+    const therapyTabBtns = document.querySelectorAll('.therapy-tab-btn');
+    const therapyMoodTip = document.getElementById('therapyMoodTip');
+    const openTailoredTherapyBtn = document.getElementById('openTailoredTherapyBtn');
+    const therapyTipText = document.getElementById('therapyTipText');
+
+    let currentTherapyCategory = 'angry';
+
+    function renderTherapyContent(category) {
+      currentTherapyCategory = category;
+      const mod = THERAPY_MODULES[category];
+      if (!mod) return;
+
+      let html = `
+        <div class="mb-4">
+          <h3 class="text-sm font-medium text-slate-100 flex items-center space-x-2">
+            <span>${mod.title}</span>
+          </h3>
+          <p class="text-xs text-slate-400 font-light mt-1 leading-relaxed">${mod.desc}</p>
+        </div>
+        <div class="space-y-3">
+      `;
+
+      mod.tools.forEach((tool) => {
+        html += `
+          <div class="p-3.5 sm:p-4 rounded-2xl glass-panel border border-white/5 hover:border-violet-500/30 transition-all flex flex-col justify-between space-y-2.5">
+            <div class="flex items-start space-x-3">
+              <span class="text-2xl p-2 rounded-xl bg-white/5">${tool.icon}</span>
+              <div class="flex-1">
+                <h4 class="text-xs sm:text-sm font-medium text-slate-200">${tool.name}</h4>
+                <p class="text-[11px] sm:text-xs text-slate-400 font-light mt-1 leading-relaxed">${tool.science}</p>
+              </div>
+            </div>
+            <div class="flex justify-end">
+              <button class="therapy-action-btn glass-btn px-3 py-1.5 rounded-full text-xs text-violet-300 hover:text-white border-violet-500/40 bg-violet-500/10 flex items-center space-x-1.5 transition" data-action="${tool.actionType}">
+                <span>${tool.actionLabel}</span>
+                <span>→</span>
+              </button>
+            </div>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+      therapyContentContainer.innerHTML = html;
+
+      // Attach action handlers
+      const actionBtns = therapyContentContainer.querySelectorAll('.therapy-action-btn');
+      actionBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          handleTherapyAction(btn.dataset.action);
+        });
+      });
+    }
+
+    function handleTherapyAction(actionType) {
+      closeTherapyModal();
+
+      if (actionType === 'breathing_sigh') {
+        if (!isBreathingActive) toggleBreathingGuide();
+      } else if (actionType === 'set_embers_theme') {
+        currentTheme = 'embers';
+        document.querySelectorAll('.theme-opt').forEach(b => {
+          if (b.dataset.theme === 'embers') {
+            b.className = "theme-opt active-opt py-2 px-1 rounded-lg border border-violet-500 bg-violet-500/20 text-violet-200 flex flex-col items-center transition";
+          } else {
+            b.className = "theme-opt py-2 px-1 rounded-lg border border-white/10 hover:border-violet-500/40 text-slate-400 flex flex-col items-center transition";
+          }
+        });
+        glowBackdrop.className = `absolute -inset-1 rounded-3xl bg-gradient-to-r ${PALETTES.embers.glowBackdrop} opacity-0 blur-xl transition-opacity duration-700 pointer-events-none`;
+      } else if (actionType === 'set_prompt_cbt_anger') {
+        mainPromptTitle.textContent = '"สิ่งที่ทำให้เราโกรธตอนนี้ เกิดขึ้นจริง 100% หรือมีข้อสันนิษฐานที่เราเติมแต่งเข้าไปเอง?"';
+        mainPromptTitle.classList.add('text-rose-300');
+        ventInput.focus();
+      } else if (actionType === 'start_grounding') {
+        mainPromptTitle.textContent = '"ดึงสติสู่ปัจจุบัน: ลองสังเกต 5 สิ่งรอบตัวที่คุณมองเห็นตอนนี้ และ 4 สิ่งที่คุณกำลังสัมผัสได้"';
+        mainPromptTitle.classList.add('text-cyan-300');
+        ventInput.focus();
+      } else if (actionType === 'set_prompt_act_leaves') {
+        mainPromptTitle.textContent = '"ความคิดนี้เป็นเพียงใบไม้ที่ลอยผ่านมา... พิมพ์มันลงไป แล้วมองดูมันลอยผ่านสายน้ำไปช้าๆ"';
+        mainPromptTitle.classList.add('text-emerald-300');
+        ventInput.focus();
+      } else if (actionType === 'open_breathing') {
+        if (!isBreathingActive) toggleBreathingGuide();
+      } else if (actionType === 'set_prompt_self_compassion') {
+        mainPromptTitle.textContent = '"เอามือทาบอกเบาๆ... พูดกับตัวเองว่า: ตอนนี้เจ็บปวดจังเลยนะ แต่ฉันจะอยู่ตรงนี้เคียงข้างเธอเสมอ"';
+        mainPromptTitle.classList.add('text-rose-200');
+        ventInput.focus();
+      } else if (actionType === 'set_prompt_inner_child') {
+        mainPromptTitle.textContent = '"ถ้าเด็กน้อยในตัวคุณกำลังร้องไห้เรื่องนี้... คุณจะกอดเขาแล้วพูดอะไรเพื่อปลอบประโลมเขา?"';
+        mainPromptTitle.classList.add('text-violet-200');
+        ventInput.focus();
+      } else if (actionType === 'open_gratitude') {
+        if (openGratitudeBtn) openGratitudeBtn.click();
+      } else if (actionType === 'set_prompt_permission') {
+        mainPromptTitle.textContent = '"อนุญาตให้ตัวเองได้หยุดพัก... วางภาระทั้งหมดลง 15 นาที โลกใบนี้จะยังหมุนต่อไปได้แม้คุณจะพัก"';
+        mainPromptTitle.classList.add('text-amber-200');
+        ventInput.focus();
+      } else if (actionType === 'enable_stream_mode') {
+        if (!isStreamMode) toggleStreamMode();
+      } else if (actionType === 'play_drone_sound') {
+        if (!isSoundPlaying && soundToggleBtn) soundToggleBtn.click();
+      } else if (actionType === 'set_prompt_unsent_letter') {
+        mainPromptTitle.textContent = '"จดหมายที่ไม่มีวันส่ง: เขียนความจริงทุกอย่างที่คุณอยากพูดออกมาให้หมด แล้วปล่อยให้สลายไปในความมืด"';
+        mainPromptTitle.classList.add('text-violet-300');
+        ventInput.focus();
+      } else if (actionType === 'set_prompt_empty_cup') {
+        mainPromptTitle.textContent = '"เทน้ำออกจากแก้ว: มีอะไรที่ตกค้างในใจ พิมพ์มันออกมาคำต่อคำเพื่อคืนความว่างให้จิตใจ"';
+        mainPromptTitle.classList.add('text-slate-200');
+        ventInput.focus();
+      }
+
+      playAsmrKeystroke();
+    }
+
+    function openTherapyModal(category = 'angry') {
+      renderTherapyContent(category);
+      therapyTabBtns.forEach(b => {
+        if (b.dataset.category === category) {
+          b.className = "therapy-tab-btn active-tab px-3 py-1.5 rounded-full border border-rose-500 bg-rose-500/20 text-rose-200 whitespace-nowrap transition";
+        } else {
+          b.className = "therapy-tab-btn px-3 py-1.5 rounded-full border border-white/10 hover:border-violet-500/40 text-slate-300 whitespace-nowrap transition";
+        }
+      });
+
+      therapyModal.classList.remove('opacity-0', 'pointer-events-none');
+      therapyModal.querySelector('.glass-panel').classList.remove('scale-95');
+      therapyModal.querySelector('.glass-panel').classList.add('scale-100');
+      playAsmrKeystroke();
+    }
+
+    function closeTherapyModal() {
+      therapyModal.classList.add('opacity-0', 'pointer-events-none');
+      therapyModal.querySelector('.glass-panel').classList.add('scale-95');
+      therapyModal.querySelector('.glass-panel').classList.remove('scale-100');
+    }
+
+    if (therapyHubBtn) therapyHubBtn.addEventListener('click', () => openTherapyModal(currentTherapyCategory));
+    if (closeTherapyModalBtn) closeTherapyModalBtn.addEventListener('click', closeTherapyModal);
+
+    therapyTabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        therapyTabBtns.forEach(b => {
+          b.className = "therapy-tab-btn px-3 py-1.5 rounded-full border border-white/10 hover:border-violet-500/40 text-slate-300 whitespace-nowrap transition";
+        });
+        btn.className = "therapy-tab-btn active-tab px-3 py-1.5 rounded-full border border-rose-500 bg-rose-500/20 text-rose-200 whitespace-nowrap transition";
+        renderTherapyContent(btn.dataset.category);
+        playAsmrKeystroke();
+      });
+    });
+
+    if (openTailoredTherapyBtn) {
+      openTailoredTherapyBtn.addEventListener('click', () => {
+        openTherapyModal(currentTherapyCategory);
+      });
+    }
 
     // --- GRATITUDE ANCHOR LOGIC ---
     const openGratitudeBtn = document.getElementById('openGratitudeBtn');
@@ -1624,5 +1944,52 @@
     });
 
   </script>
+
+  <!-- Targeted Therapy Toolkit Modal -->
+  <div id="therapyModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
+    <div class="glass-panel w-full max-w-xl max-h-[88vh] rounded-3xl p-5 sm:p-7 flex flex-col border border-white/10 shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-4 border-b border-white/10">
+        <div class="flex items-center space-x-2.5">
+          <span class="text-xl">🌱</span>
+          <div>
+            <h2 class="text-sm sm:text-base font-medium text-slate-100">จิตวิทยาบำบัดตรงจุด (Targeted Therapy)</h2>
+            <p class="text-xs text-slate-400 font-light">เครื่องมือและเทคนิคจิตวิทยาที่คัดสรรเฉพาะสำหรับอารมณ์ที่คุณกำลังเผชิญ</p>
+          </div>
+        </div>
+        <button id="closeTherapyModalBtn" class="p-1.5 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Emotion Category Tabs -->
+      <div class="flex items-center space-x-2 py-3 overflow-x-auto no-scrollbar border-b border-white/5 text-xs">
+        <button class="therapy-tab-btn active-tab px-3 py-1.5 rounded-full border border-rose-500 bg-rose-500/20 text-rose-200 whitespace-nowrap transition" data-category="angry">
+          🔥 โกรธ / คับแค้น
+        </button>
+        <button class="therapy-tab-btn px-3 py-1.5 rounded-full border border-white/10 hover:border-violet-500/40 text-slate-300 whitespace-nowrap transition" data-category="anxious">
+          🌪️ กังวล / คิดวน
+        </button>
+        <button class="therapy-tab-btn px-3 py-1.5 rounded-full border border-white/10 hover:border-violet-500/40 text-slate-300 whitespace-nowrap transition" data-category="hurt">
+          💔 เศร้า / เจ็บปวด
+        </button>
+        <button class="therapy-tab-btn px-3 py-1.5 rounded-full border border-white/10 hover:border-violet-500/40 text-slate-300 whitespace-nowrap transition" data-category="exhausted">
+          🔋 หมดพลัง / หมดไฟ
+        </button>
+        <button class="therapy-tab-btn px-3 py-1.5 rounded-full border border-white/10 hover:border-violet-500/40 text-slate-300 whitespace-nowrap transition" data-category="suffocated">
+          🌧️ อึดอัด / พูดไม่ออก
+        </button>
+      </div>
+
+      <!-- Tab Content Area (Scrollable) -->
+      <div id="therapyContentContainer" class="flex-1 overflow-y-auto py-4 space-y-3.5 pr-1 text-slate-200">
+        <!-- Content injected dynamically by JS -->
+      </div>
+
+    </div>
+  </div>
 </body>
 </html>
