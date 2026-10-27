@@ -546,6 +546,53 @@
     </div>
   </footer>
 
+  <!-- Targeted Therapy Toolkit Modal -->
+  <div id="therapyModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
+    <div class="glass-panel w-full max-w-xl max-h-[88vh] rounded-3xl p-5 sm:p-7 flex flex-col border border-white/10 shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-4 border-b border-white/10">
+        <div class="flex items-center space-x-2.5">
+          <span class="text-xl">🌱</span>
+          <div>
+            <h2 class="text-sm sm:text-base font-medium text-slate-100">จิตวิทยาบำบัดตรงจุด (Targeted Therapy)</h2>
+            <p class="text-xs text-slate-400 font-light">เครื่องมือและเทคนิคจิตวิทยาที่คัดสรรเฉพาะสำหรับอารมณ์ที่คุณกำลังเผชิญ</p>
+          </div>
+        </div>
+        <button id="closeTherapyModalBtn" class="p-1.5 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Emotion Category Tabs -->
+      <div class="flex items-center space-x-2 py-3 overflow-x-auto no-scrollbar border-b border-white/5 text-xs">
+        <button class="therapy-tab-btn active-tab px-3 py-1.5 rounded-full border border-rose-500 bg-rose-500/20 text-rose-200 whitespace-nowrap transition" data-category="angry">
+          🔥 โกรธ / คับแค้น
+        </button>
+        <button class="therapy-tab-btn px-3 py-1.5 rounded-full border border-white/10 hover:border-violet-500/40 text-slate-300 whitespace-nowrap transition" data-category="anxious">
+          🌪️ กังวล / คิดวน
+        </button>
+        <button class="therapy-tab-btn px-3 py-1.5 rounded-full border border-white/10 hover:border-violet-500/40 text-slate-300 whitespace-nowrap transition" data-category="hurt">
+          💔 เศร้า / เจ็บปวด
+        </button>
+        <button class="therapy-tab-btn px-3 py-1.5 rounded-full border border-white/10 hover:border-violet-500/40 text-slate-300 whitespace-nowrap transition" data-category="exhausted">
+          🔋 หมดพลัง / หมดไฟ
+        </button>
+        <button class="therapy-tab-btn px-3 py-1.5 rounded-full border border-white/10 hover:border-violet-500/40 text-slate-300 whitespace-nowrap transition" data-category="suffocated">
+          🌧️ อึดอัด / พูดไม่ออก
+        </button>
+      </div>
+
+      <!-- Tab Content Area (Scrollable) -->
+      <div id="therapyContentContainer" class="flex-1 overflow-y-auto py-4 space-y-3.5 pr-1 text-slate-200">
+        <!-- Content injected dynamically by JS -->
+      </div>
+
+    </div>
+  </div>
+
   <!-- Application Logic & Sound Engine -->
   <script>
     // --- APP STATE ---
@@ -1254,6 +1301,11 @@
 
     if (therapyHubBtn) therapyHubBtn.addEventListener('click', () => openTherapyModal(currentTherapyCategory));
     if (closeTherapyModalBtn) closeTherapyModalBtn.addEventListener('click', closeTherapyModal);
+    if (therapyModal) {
+      therapyModal.addEventListener('click', (e) => {
+        if (e.target === therapyModal) closeTherapyModal();
+      });
+    }
 
     therapyTabBtns.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1765,51 +1817,5 @@
 
   </script>
 
-  <!-- Targeted Therapy Toolkit Modal -->
-  <div id="therapyModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
-    <div class="glass-panel w-full max-w-xl max-h-[88vh] rounded-3xl p-5 sm:p-7 flex flex-col border border-white/10 shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300">
-      
-      <!-- Modal Header -->
-      <div class="flex items-center justify-between pb-4 border-b border-white/10">
-        <div class="flex items-center space-x-2.5">
-          <span class="text-xl">🌱</span>
-          <div>
-            <h2 class="text-sm sm:text-base font-medium text-slate-100">จิตวิทยาบำบัดตรงจุด (Targeted Therapy)</h2>
-            <p class="text-xs text-slate-400 font-light">เครื่องมือและเทคนิคจิตวิทยาที่คัดสรรเฉพาะสำหรับอารมณ์ที่คุณกำลังเผชิญ</p>
-          </div>
-        </div>
-        <button id="closeTherapyModalBtn" class="p-1.5 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-
-      <!-- Emotion Category Tabs -->
-      <div class="flex items-center space-x-2 py-3 overflow-x-auto no-scrollbar border-b border-white/5 text-xs">
-        <button class="therapy-tab-btn active-tab px-3 py-1.5 rounded-full border border-rose-500 bg-rose-500/20 text-rose-200 whitespace-nowrap transition" data-category="angry">
-          🔥 โกรธ / คับแค้น
-        </button>
-        <button class="therapy-tab-btn px-3 py-1.5 rounded-full border border-white/10 hover:border-violet-500/40 text-slate-300 whitespace-nowrap transition" data-category="anxious">
-          🌪️ กังวล / คิดวน
-        </button>
-        <button class="therapy-tab-btn px-3 py-1.5 rounded-full border border-white/10 hover:border-violet-500/40 text-slate-300 whitespace-nowrap transition" data-category="hurt">
-          💔 เศร้า / เจ็บปวด
-        </button>
-        <button class="therapy-tab-btn px-3 py-1.5 rounded-full border border-white/10 hover:border-violet-500/40 text-slate-300 whitespace-nowrap transition" data-category="exhausted">
-          🔋 หมดพลัง / หมดไฟ
-        </button>
-        <button class="therapy-tab-btn px-3 py-1.5 rounded-full border border-white/10 hover:border-violet-500/40 text-slate-300 whitespace-nowrap transition" data-category="suffocated">
-          🌧️ อึดอัด / พูดไม่ออก
-        </button>
-      </div>
-
-      <!-- Tab Content Area (Scrollable) -->
-      <div id="therapyContentContainer" class="flex-1 overflow-y-auto py-4 space-y-3.5 pr-1 text-slate-200">
-        <!-- Content injected dynamically by JS -->
-      </div>
-
-    </div>
-  </div>
 </body>
 </html>
