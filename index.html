@@ -1416,7 +1416,6 @@
       ventInput.style.setProperty('--dissolve-duration', `${currentSpeedConfig.fadeDuration / 1000}s`);
       ventInput.classList.add('fade-dissolving');
       spawnDissolveWave(60);
-      playDissolveChime();
 
       setTimeout(() => {
         ventInput.value = '';
@@ -1436,7 +1435,6 @@
       isDissolving = true;
 
       spawnDissolveWave(120);
-      playDissolveChime();
 
       ventInput.classList.add('instant-dissolving');
       timerText.textContent = "ปล่อยวางเรียบร้อยแล้ว...";
@@ -1719,25 +1717,7 @@
       }, 800);
     }
 
-    function playDissolveChime() {
-      if (!audioCtx || audioCtx.state !== 'running') return;
-      try {
-        const now = audioCtx.currentTime;
-        const chime = audioCtx.createOscillator();
-        const chimeG = audioCtx.createGain();
-        chime.type = 'sine';
-        chime.frequency.setValueAtTime(528, now);
-        chime.frequency.exponentialRampToValueAtTime(432, now + 1.8);
-
-        chimeG.gain.setValueAtTime(0.08, now);
-        chimeG.gain.exponentialRampToValueAtTime(0.0001, now + 2.0);
-
-        chime.connect(chimeG);
-        chimeG.connect(audioCtx.destination);
-        chime.start(now);
-        chime.stop(now + 2.0);
-      } catch (e) {}
-    }
+    function playDissolveChime() {}
 
     // UI Sound Elements
     const soundToggleBtn = document.getElementById('soundToggleBtn');
