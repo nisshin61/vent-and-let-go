@@ -307,21 +307,35 @@
     
     <!-- Header Prompt & Mindful Spark Generator -->
     <div id="instructionText" class="text-center mb-6 zen-hide transition-all duration-700 ease-in-out">
-      <p id="mainPromptTitle" class="text-slate-300 text-lg sm:text-xl font-light tracking-wide drop-shadow-sm transition-opacity duration-500">
+      <p id="mainPromptTitle" class="text-slate-300 text-lg sm:text-xl font-light tracking-wide drop-shadow-sm transition-opacity duration-500 min-h-[3.5rem] flex items-center justify-center px-4">
         พิมพ์ทุกสิ่งที่อยู่ในใจ... แล้วปล่อยให้มันค่อยๆ หายไป
       </p>
 
-      <!-- Reflection Prompt Trigger Button -->
-      <div class="flex items-center justify-center mt-3">
-        <button id="sparkPromptBtn" class="glass-btn px-3 py-1 rounded-full text-xs text-violet-300/90 hover:text-white flex items-center space-x-1.5 transition-all duration-300">
+      <!-- Reflection Prompt Action Controls -->
+      <div id="promptControls" class="flex items-center justify-center space-x-2 mt-2">
+        <!-- Open Button (Visible when prompt is OFF) -->
+        <button id="openSparkPromptBtn" class="glass-btn px-3.5 py-1.5 rounded-full text-xs text-violet-300/90 hover:text-white flex items-center space-x-1.5 transition-all duration-300">
           <svg class="w-3.5 h-3.5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
           </svg>
-          <span id="sparkPromptBtnText">จุดประกายความคิด (คำถามสะกิดใจ)</span>
+          <span>เปิดคำถามสะกิดใจ</span>
         </button>
+
+        <!-- Active Question Controls (Visible when prompt is ON) -->
+        <div id="activeSparkControls" class="hidden flex items-center space-x-2">
+          <button id="nextPromptBtn" class="glass-btn px-3.5 py-1.5 rounded-full text-xs text-violet-200 hover:text-white flex items-center space-x-1.5 transition-all duration-300 border-violet-500/40 bg-violet-500/10">
+            <svg class="w-3.5 h-3.5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span>สุ่มคำถามถัดไป ↻</span>
+          </button>
+          <button id="closeSparkPromptBtn" class="glass-btn px-3 py-1.5 rounded-full text-xs text-slate-400 hover:text-rose-300 flex items-center space-x-1 transition-all duration-300" title="ปิดคำถามสะกิดใจและกลับสู่ข้อความเริ่มต้น">
+            <span>ปิดคำถาม ✕</span>
+          </button>
+        </div>
       </div>
 
-      <p class="text-[11px] text-slate-500 font-light mt-2 tracking-wider">
+      <p class="text-[11px] text-slate-500 font-light mt-2.5 tracking-wider">
         ที่ตรงนี้คือพื้นที่ปลอดภัยของคุณ ไม่มีใครเห็น และไม่มีการบันทึกสิ่งใด
       </p>
     </div>
@@ -539,7 +553,7 @@
     requestAnimationFrame(animateParticles);
 
 
-    // --- MINDFUL REFLECTION PROMPT GENERATOR ---
+    // --- MINDFUL REFLECTION PROMPT GENERATOR (EXPANDED COLLECTION) ---
     const mindfulPrompts = [
       "อะไรคือเรื่องที่คุณแบกไว้คนเดียวนานเกินไปแล้ว?",
       "ถ้าสามารถให้อภัยตัวเองได้หนึ่งเรื่องในวันนี้ เรื่องนั้นคืออะไร?",
@@ -549,29 +563,94 @@
       "มีเรื่องอะไรในอดีตที่คุณรู้สึกพร้อมแล้วที่จะปล่อยให้มันผ่านไป?",
       "คำพูดของใครที่ทำให้คุณเจ็บปวด และถึงเวลาวางมันลงตรงนี้แล้วหรือยัง?",
       "คุณกำลังรู้สึกกดดันตัวเองในเรื่องอะไรมากเกินไปหรือเปล่า?",
-      "ถ้าตอนนี้ไม่มีคำว่า 'ต้องเป็นแบบนั้นแบบนี้' คุณอยากรู้สึกอย่างไรมากที่สุด?"
+      "ถ้าตอนนี้ไม่มีคำว่า 'ต้องสมบูรณ์แบบ' คุณอยากบอกอะไรกับตัวเอง?",
+      "วันนี้มีเรื่องอะไรที่ทำให้คุณรู้สึกสูญเสียพลังงานมากที่สุด?",
+      "อะไรคือสิ่งที่ทำให้คุณรู้สึกกลัว หรือรู้สึกไม่ปลอดภัยในใจลึกๆ?",
+      "มีใครบางคนที่คุณคิดถึง แต่รู้ว่ากลับไปเป็นเหมือนเดิมไม่ได้แล้วใช่ไหม?",
+      "เรื่องอะไรที่คุณพยายามควบคุม ทั้งที่รู้ดีว่ามันอยู่นอกเหนือการควบคุมของคุณ?",
+      "คุณกำลังฝืนยิ้มให้กับเรื่องอะไรอยู่หรือเปล่า?",
+      "ถ้าสามารถถอดหน้ากากที่เข้มแข็งออกได้ คุณอยากร้องไห้หรือบ่นเรื่องไหนออกมา?",
+      "อะไรคือสิ่งที่คุณรู้สึกว่า 'ไม่แฟร์' ที่ต้องเจอในช่วงนี้?",
+      "คุณกำลังแอบเปรียบเทียบตัวเองกับใครจนรู้สึกด้อยค่าอยู่หรือไม่?",
+      "มีคำขอโทษที่คุณติดค้างตัวเองเรื่องไหนที่ยังไม่ได้เอ่ยออกมาบ้าง?",
+      "ความคาดหวังของใครที่กำลังกดทับหัวไหล่ของคุณอยู่ตอนนี้?",
+      "ถ้ามีโอกาสได้พูดกับตัวเองในวัยเด็ก คุณอยากขอโทษหรือปลอบประโลมเรื่องอะไร?",
+      "สิ่งไหนที่กำลังดูดกลืนความสุขของคุณไปทีละน้อยในแต่ละวัน?",
+      "มีความรู้สึกผิดอะไรที่คุณยังคงลงโทษตัวเองซ้ำๆ อยู่หรือเปล่า?",
+      "คุณกำลังกลัวที่จะถูกปฏิเสธ หรือกลัวที่จะไม่เป็นที่ยอมรับในเรื่องใด?",
+      "วันนี้คุณใจร้ายกับตัวเองมากเกินไปหรือเปล่า?",
+      "เรื่องไหนที่คุณควรหยุดวิ่งตาม และปล่อยให้มันหลุดลอยไปได้แล้ว?",
+      "มีบาดแผลเก่าเรื่องใดที่มักจะวนกลับมาสะกิดใจคุณซ้ำๆ?",
+      "ถ้าปล่อยความกังวลทั้งหมดลงตรงนี้ได้ ชีวิตในวันพรุ่งนี้จะเบาขึ้นแค่ไหน?",
+      "คุณกำลังรั้งสิ่งที่ไม่ใช่เอาไว้เพราะความคุ้นเคยอยู่หรือไม่?",
+      "มีบทสนทนาไหนที่คุณอยากย้อนเวลากลับไปแก้ไข หรืออยากลืมมันไปเสียที?",
+      "สิ่งใดคือภาระหน้าที่ที่ไม่ใช่ของคุณ แต่คุณกลับอาสารับมันมาแบกไว้เอง?",
+      "ถ้าวันนี้คุณอนุญาตให้ตัวเอง 'ยอมแพ้ชั่วคราว' เรื่องนั้นจะเป็นเรื่องอะไร?",
+      "คุณกำลังโหยหาการยอมรับ หรือคำชมจากใครมากเป็นพิเศษหรือเปล่า?",
+      "มีเรื่องอะไรที่ต่อให้คิดวนเป็นพันรอบ ก็ยังไม่มีคำตอบในตอนนี้บ้าง?",
+      "คุณรู้สึกโดดเดี่ยวที่สุดในตอนไหน และอยากได้รับการโอบกอดอย่างไร?",
+      "ความฝันหรือเป้าหมายใดที่กำลังทำให้คุณเหนื่อยล้าจนแทบหมดลมหายใจ?",
+      "วันนี้คุณได้ชื่นชมหรือขอบคุณตัวเองบ้างหรือยังที่อดทนผ่านเรื่องยากๆ มาได้?"
     ];
 
+    const DEFAULT_PROMPT_TITLE = "พิมพ์ทุกสิ่งที่อยู่ในใจ... แล้วปล่อยให้มันค่อยๆ หายไป";
     const mainPromptTitle = document.getElementById('mainPromptTitle');
-    const sparkPromptBtn = document.getElementById('sparkPromptBtn');
-    const sparkPromptBtnText = document.getElementById('sparkPromptBtnText');
-    let promptIndex = 0;
+    const openSparkPromptBtn = document.getElementById('openSparkPromptBtn');
+    const activeSparkControls = document.getElementById('activeSparkControls');
+    const nextPromptBtn = document.getElementById('nextPromptBtn');
+    const closeSparkPromptBtn = document.getElementById('closeSparkPromptBtn');
 
-    sparkPromptBtn.addEventListener('click', () => {
-      // Pick next prompt
-      promptIndex = (promptIndex + 1) % mindfulPrompts.length;
-      const chosen = mindfulPrompts[promptIndex];
+    let currentPromptIdx = -1;
+
+    function getNextRandomPromptIndex() {
+      if (mindfulPrompts.length <= 1) return 0;
+      let newIdx;
+      do {
+        newIdx = Math.floor(Math.random() * mindfulPrompts.length);
+      } while (newIdx === currentPromptIdx);
+      return newIdx;
+    }
+
+    function displayPrompt(index) {
+      currentPromptIdx = index;
+      const text = mindfulPrompts[currentPromptIdx];
 
       mainPromptTitle.style.opacity = '0';
       setTimeout(() => {
-        mainPromptTitle.textContent = `"${chosen}"`;
+        mainPromptTitle.textContent = `"${text}"`;
         mainPromptTitle.classList.remove('text-slate-300');
         mainPromptTitle.classList.add('text-violet-200');
         mainPromptTitle.style.opacity = '1';
-        sparkPromptBtnText.textContent = "สุ่มคำถามอื่น ↻";
-      }, 300);
+      }, 250);
 
-      // Play gentle kalimba chime on prompt switch
+      playAsmrKeystroke();
+    }
+
+    // Open prompt mode
+    openSparkPromptBtn.addEventListener('click', () => {
+      openSparkPromptBtn.classList.add('hidden');
+      activeSparkControls.classList.remove('hidden');
+      displayPrompt(getNextRandomPromptIndex());
+    });
+
+    // Next random prompt
+    nextPromptBtn.addEventListener('click', () => {
+      displayPrompt(getNextRandomPromptIndex());
+    });
+
+    // Close prompt mode
+    closeSparkPromptBtn.addEventListener('click', () => {
+      activeSparkControls.classList.add('hidden');
+      openSparkPromptBtn.classList.remove('hidden');
+
+      mainPromptTitle.style.opacity = '0';
+      setTimeout(() => {
+        mainPromptTitle.textContent = DEFAULT_PROMPT_TITLE;
+        mainPromptTitle.classList.remove('text-violet-200');
+        mainPromptTitle.classList.add('text-slate-300');
+        mainPromptTitle.style.opacity = '1';
+      }, 250);
+
       playAsmrKeystroke();
     });
 
