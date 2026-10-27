@@ -286,12 +286,6 @@
         <span id="soundLabel">เสียงบรรยากาศ</span>
       </button>
 
-      <!-- ASMR Typing Sound Button -->
-      <button id="asmrToggleBtn" class="glass-btn px-3 py-1.5 rounded-full text-xs text-slate-300 flex items-center space-x-1.5" title="เปิด/ปิดเสียงเคาะคีย์บอร์ด ASMR บำบัด">
-        <span class="text-xs">⌨️</span>
-        <span id="asmrBtnLabel">เสียงพิมพ์ ASMR</span>
-      </button>
-
       <!-- Stream Mode Button (Blind Writing) -->
       <button id="streamModeBtn" class="glass-btn px-3 py-1.5 rounded-full text-xs text-slate-300 flex items-center space-x-1.5" title="โหมดหมึกเลือนทันที: พิมพ์ระบายไหลลื่นโดยไม่ต้องอ่านทวนหรือตัดสินตัวเอง">
         <span class="text-xs">🌊</span>
@@ -343,22 +337,6 @@
         <button id="optThemeGold" class="py-1.5 rounded-lg border border-white/10 hover:border-amber-500/40 text-slate-400 transition flex items-center justify-center space-x-1.5">
           <span>☀️</span>
           <span>แสงทองนวล (Golden)</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- ASMR Typing Sound Style -->
-    <div class="mb-4">
-      <label class="block text-xs text-slate-400 mb-2">เสียงพิมพ์ ASMR ตอบรับ (Typing Sound)</label>
-      <div class="grid grid-cols-3 gap-1.5 text-xs">
-        <button class="asmr-style-opt active-opt py-1.5 rounded-lg border border-violet-500 bg-violet-500/20 text-violet-200 transition" data-style="kalimba">
-          กระดิ่งคาลิมบา
-        </button>
-        <button class="asmr-style-opt py-1.5 rounded-lg border border-white/10 hover:border-violet-500/40 text-slate-400 transition" data-style="droplet">
-          หยดน้ำ
-        </button>
-        <button class="asmr-style-opt py-1.5 rounded-lg border border-white/10 hover:border-violet-500/40 text-slate-400 transition" data-style="wood">
-          ไม้กระทบ
         </button>
       </div>
     </div>
@@ -580,9 +558,7 @@
     };
     let releaseCount = 0;
     let isZenMode = false;
-    let isAsmrTypingActive = true; // Enabled by default for relaxing feedback
-    let currentAsmrStyle = 'kalimba'; // 'kalimba' | 'droplet' | 'wood'
-
+    
     // --- PARTICLE SYSTEM ---
     const canvas = document.getElementById('particleCanvas');
     const ctx = canvas.getContext('2d');
@@ -1487,9 +1463,6 @@
     ventInput.addEventListener('keydown', (e) => {
       if (isDissolving) resetDissolveState();
       spawnTypingParticles(3);
-      if (isAsmrTypingActive && e.key.length === 1 || e.key === 'Backspace' || e.key === 'Enter' || e.key === ' ') {
-        playAsmrKeystroke();
-      }
     });
 
     letItGoBtn.addEventListener('click', dissolveImmediately);
@@ -1637,141 +1610,8 @@
       });
     });
 
-    // ASMR Sound Style options
-    const asmrStyleButtons = document.querySelectorAll('.asmr-style-opt');
-    asmrStyleButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        asmrStyleButtons.forEach(b => {
-          b.className = "asmr-style-opt py-1.5 rounded-lg border border-white/10 hover:border-violet-500/40 text-slate-400 transition";
-        });
-        btn.className = "asmr-style-opt active-opt py-1.5 rounded-lg border border-violet-500 bg-violet-500/20 text-violet-200 transition";
-        currentAsmrStyle = btn.dataset.style;
-        initAudio();
-        playAsmrKeystroke(); // Preview sound
-      });
-    });
-
-
-    // --- AMBIENT SOUND GENERATOR & ASMR KEYSTROKE SYNTHESIZER ---
-    let audioCtx = null;
-    let isSoundPlaying = false;
-    let currentSoundMode = 'drone';
-    let masterGain = null;
-    let droneOsc1 = null;
-    let droneOsc2 = null;
-    let noiseNode = null;
-
-    function initAudio() {
-      if (!audioCtx) {
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        audioCtx = new AudioContextClass();
-        masterGain = audioCtx.createGain();
-        masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
-        masterGain.connect(audioCtx.destination);
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-    }
-
-    // Pentatonic scale frequencies for kalimba ASMR keystrokes (Frequencies in Hz)
-    const KALIMBA_PENTATONIC = [
-      329.63, // E4
-      392.00, // G4
-      440.00, // A4
-      493.88, // B4
-      523.25, // C5
-      587.33, // D5
-      659.25, // E5
-      783.99  // G5
-    ];
-    let noteCursor = 0;
-
-    function playAsmrKeystroke() {
-      initAudio();
-      if (!audioCtx || audioCtx.state !== 'running') return;
-
-      const now = audioCtx.currentTime;
-
-      if (currentAsmrStyle === 'kalimba') {
-        // Pentatonic gentle kalimba tone
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        // Sequential walk across pentatonic scale with slight randomization
-        const freq = KALIMBA_PENTATONIC[noteCursor];
-        noteCursor = (noteCursor + 1 + Math.floor(Math.random() * 2)) % KALIMBA_PENTATONIC.length;
-
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, now);
-
-        gain.gain.setValueAtTime(0.04, now);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start(now);
-        osc.stop(now + 0.35);
-
-      } else if (currentAsmrStyle === 'droplet') {
-        // Subtle water droplet plop
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        osc.type = 'sine';
-        const startFreq = 850 + Math.random() * 200;
-        osc.frequency.setValueAtTime(startFreq, now);
-        osc.frequency.exponentialRampToValueAtTime(320, now + 0.08);
-
-        gain.gain.setValueAtTime(0.05, now);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start(now);
-        osc.stop(now + 0.09);
-
-      } else if (currentAsmrStyle === 'wood') {
-        // Muffled wooden tap
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(180 + Math.random() * 40, now);
-        osc.frequency.exponentialRampToValueAtTime(60, now + 0.05);
-
-        gain.gain.setValueAtTime(0.06, now);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.06);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start(now);
-        osc.stop(now + 0.06);
-      }
-    }
-
-    // Toggle ASMR button in header
-    const asmrToggleBtn = document.getElementById('asmrToggleBtn');
-    const asmrBtnLabel = document.getElementById('asmrBtnLabel');
-
-    asmrToggleBtn.addEventListener('click', () => {
-      initAudio();
-      isAsmrTypingActive = !isAsmrTypingActive;
-      if (isAsmrTypingActive) {
-        asmrToggleBtn.classList.add('border-violet-400', 'bg-violet-500/10', 'text-violet-200');
-        asmrBtnLabel.textContent = "เปิดเสียง ASMR";
-        playAsmrKeystroke();
-      } else {
-        asmrToggleBtn.classList.remove('border-violet-400', 'bg-violet-500/10', 'text-violet-200');
-        asmrBtnLabel.textContent = "ปิดเสียง ASMR";
-      }
-    });
-
-    // Default style active for ASMR button
-    asmrToggleBtn.classList.add('border-violet-400', 'bg-violet-500/10', 'text-violet-200');
+    // ASMR typing audio removed as requested (silent no-op)
+    function playAsmrKeystroke() {}
 
 
     // 1. Ambient Drone 432Hz
