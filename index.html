@@ -198,6 +198,30 @@
     body.theme-gold .text-violet-300 { color: #D97706 !important; }
     body.theme-gold .text-violet-400 { color: #D97706 !important; }
     body.theme-gold .bg-black\/25 { background-color: rgba(255, 255, 255, 0.6) !important; }
+
+    /* Stream of Consciousness Mode (Blind Writing) */
+    .stream-active #ventInput {
+      color: rgba(255, 255, 255, 0.12) !important;
+      text-shadow: 0 0 14px rgba(167, 139, 250, 0.45) !important;
+      caret-color: #a78bfa !important;
+      transition: color 1.2s ease, text-shadow 1.2s ease !important;
+    }
+    body.theme-gold.stream-active #ventInput {
+      color: rgba(46, 37, 28, 0.14) !important;
+      text-shadow: 0 0 14px rgba(217, 119, 6, 0.35) !important;
+      caret-color: #d97706 !important;
+    }
+
+    body.theme-gold .mood-opt {
+      background: rgba(255, 255, 255, 0.5) !important;
+      border-color: rgba(217, 180, 130, 0.3) !important;
+      color: #5C4A38 !important;
+    }
+    body.theme-gold .mood-opt.active-mood {
+      background: rgba(245, 158, 11, 0.2) !important;
+      border-color: #D97706 !important;
+      color: #92400E !important;
+    }
   </style>
 </head>
 <body class="relative flex flex-col items-center justify-between min-h-screen p-4 sm:p-8 select-none">
@@ -254,6 +278,12 @@
       <button id="asmrToggleBtn" class="glass-btn px-3 py-1.5 rounded-full text-xs text-slate-300 flex items-center space-x-1.5" title="เปิด/ปิดเสียงเคาะคีย์บอร์ด ASMR บำบัด">
         <span class="text-xs">⌨️</span>
         <span id="asmrBtnLabel">เสียงพิมพ์ ASMR</span>
+      </button>
+
+      <!-- Stream Mode Button (Blind Writing) -->
+      <button id="streamModeBtn" class="glass-btn px-3 py-1.5 rounded-full text-xs text-slate-300 flex items-center space-x-1.5" title="โหมดหมึกเลือนทันที: พิมพ์ระบายไหลลื่นโดยไม่ต้องอ่านทวนหรือตัดสินตัวเอง">
+        <span class="text-xs">🌊</span>
+        <span id="streamBtnLabel">หมึกเลือนไหล</span>
       </button>
 
       <!-- Theme Switcher Button -->
@@ -418,6 +448,16 @@
       </p>
     </div>
 
+    <!-- Before Mood Check-in -->
+    <div id="beforeMoodBar" class="flex flex-wrap items-center justify-center gap-1.5 mb-3.5 zen-hide transition-all duration-500 text-xs">
+      <span class="text-[11px] text-slate-500 font-light mr-1">สำรวจใจตอนนี้:</span>
+      <button class="mood-opt px-2.5 py-1 rounded-full border border-white/5 bg-white/5 hover:border-violet-500/40 text-slate-300 transition" data-mood="suffocated">🌧️ อึดอัดใจ</button>
+      <button class="mood-opt px-2.5 py-1 rounded-full border border-white/5 bg-white/5 hover:border-violet-500/40 text-slate-300 transition" data-mood="anxious">🌪️ ว้าวุ่น/กังวล</button>
+      <button class="mood-opt px-2.5 py-1 rounded-full border border-white/5 bg-white/5 hover:border-violet-500/40 text-slate-300 transition" data-mood="hurt">💔 เจ็บปวด/เศร้า</button>
+      <button class="mood-opt px-2.5 py-1 rounded-full border border-white/5 bg-white/5 hover:border-violet-500/40 text-slate-300 transition" data-mood="exhausted">🔋 หมดพลัง</button>
+      <button class="mood-opt px-2.5 py-1 rounded-full border border-white/5 bg-white/5 hover:border-violet-500/40 text-slate-300 transition" data-mood="angry">🔥 คับแค้นใจ</button>
+    </div>
+
     <!-- Text Area Container with Floating Glow -->
     <div class="w-full relative group">
       <!-- Soft ambient backdrop around textarea -->
@@ -453,9 +493,18 @@
         <span>ปล่อยวางทันที (Let it go)</span>
       </button>
 
-      <!-- Calming Thought / Breathing Quote -->
-      <div id="affirmationBox" class="text-center mt-4 text-sm text-slate-400 font-light opacity-0 transition-opacity duration-1000 max-w-md px-4">
-        "ทุกสิ่งเกิดขึ้น ตั้งอยู่ และผ่านพ้นไป... หายใจเข้าลึกๆ แล้วเริ่มต้นใหม่อย่างเบาสบาย"
+      <!-- Post-Release Emotional Check-in & Affirmation Card -->
+      <div id="affirmationBox" class="text-center mt-4 text-sm text-slate-400 font-light opacity-0 transition-opacity duration-1000 max-w-md w-full px-4 flex flex-col items-center">
+        <div id="postCheckinCard" class="glass-panel p-4 rounded-2xl w-full border border-white/10 shadow-lg mb-2">
+          <p class="text-xs text-slate-300 mb-2.5 font-normal">ตอนนี้ข้างในใจของคุณรู้สึกอย่างไรบ้าง?</p>
+          <div class="flex flex-wrap items-center justify-center gap-1.5 text-xs">
+            <button class="post-mood-btn px-3 py-1 rounded-full border border-white/10 hover:border-emerald-400/60 text-slate-300 hover:text-emerald-300 transition" data-resp="lighter">🌱 ใจเบาขึ้น</button>
+            <button class="post-mood-btn px-3 py-1 rounded-full border border-white/10 hover:border-cyan-400/60 text-slate-300 hover:text-cyan-300 transition" data-resp="calmer">🌤️ สงบขึ้น</button>
+            <button class="post-mood-btn px-3 py-1 rounded-full border border-white/10 hover:border-violet-400/60 text-slate-300 hover:text-violet-300 transition" data-resp="okay">🤍 พอไหวขึ้นนิดหน่อย</button>
+            <button class="post-mood-btn px-3 py-1 rounded-full border border-white/10 hover:border-amber-400/60 text-slate-300 hover:text-amber-300 transition" data-resp="need_time">🫂 ยังต้องการเวลา</button>
+          </div>
+        </div>
+        <p id="affirmationQuoteText" class="text-xs text-slate-400 font-light italic mt-1"></p>
       </div>
     </div>
 
@@ -484,6 +533,7 @@
   <script>
     // --- APP STATE ---
     let isGoldTheme = false;
+    let isStreamMode = false;
     let currentTheme = 'stardust';
     let currentSpeedConfig = {
       idleWait: 2800,
@@ -823,6 +873,80 @@
       optThemeGold.addEventListener('click', () => setTheme('gold'));
     }
 
+    // --- STREAM OF CONSCIOUSNESS (BLIND WRITING MODE) ---
+    const streamModeBtn = document.getElementById('streamModeBtn');
+    const streamBtnLabel = document.getElementById('streamBtnLabel');
+
+    function toggleStreamMode() {
+      isStreamMode = !isStreamMode;
+      if (isStreamMode) {
+        document.body.classList.add('stream-active');
+        streamModeBtn.classList.add('border-violet-400', 'bg-violet-500/15', 'text-violet-200');
+        streamBtnLabel.textContent = "หมึกเลือน (เปิดอยู่)";
+        ventInput.placeholder = "โหมดหมึกเลือน: พิมพ์ทุกอย่างให้ไหลออกมา ไม่ต้องคิด ไม่ต้องอ่านทวน...";
+      } else {
+        document.body.classList.remove('stream-active');
+        streamModeBtn.classList.remove('border-violet-400', 'bg-violet-500/15', 'text-violet-200');
+        streamBtnLabel.textContent = "หมึกเลือนไหล";
+        ventInput.placeholder = "เริ่มพิมพ์ความรู้สึก ความกังวล หรือเรื่องที่หนักใจไว้ตรงนี้...";
+      }
+      playAsmrKeystroke();
+    }
+    if (streamModeBtn) streamModeBtn.addEventListener('click', toggleStreamMode);
+
+    // --- EMOTIONAL CHECK-IN (BEFORE & AFTER) ---
+    const moodPlaceholders = {
+      suffocated: "รับรู้ถึงความอึดอัดในใจ... พิมพ์ระบายทุกเรื่องที่ค้างคาออกมาตรงนี้ได้เลยนะ",
+      anxious: "ความกังวลเป็นเพียงความคิดชั่วคราว... เทมันออกมาให้หมด แล้วปล่อยให้มันค่อยๆ หายไป",
+      hurt: "ตรงนี้ปลอดภัยที่จะอ่อนแอ... เขียนความเจ็บปวดที่ซ่อนไว้ แล้วให้ความมืดช่วยโอบกอด",
+      exhausted: "คุณแบกมาเยอะมากแล้ว... วางความเหนื่อยล้าทั้งหมดลงตรงนี้ แล้วพักผ่อนนะ",
+      angry: "ไม่ผิดเลยที่จะรู้สึกโกรธ... พิมพ์ทุกความคับแค้นใจออกมา แล้วปล่อยให้มันมอดดับไป"
+    };
+
+    const moodButtons = document.querySelectorAll('.mood-opt');
+    moodButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        moodButtons.forEach(b => {
+          b.className = "mood-opt px-2.5 py-1 rounded-full border border-white/5 bg-white/5 hover:border-violet-500/40 text-slate-300 transition";
+        });
+        btn.className = "mood-opt active-mood px-2.5 py-1 rounded-full border border-violet-500 bg-violet-500/20 text-violet-200 transition";
+        const mood = btn.dataset.mood;
+        if (moodPlaceholders[mood] && !isStreamMode) {
+          ventInput.placeholder = moodPlaceholders[mood];
+        }
+        playAsmrKeystroke();
+      });
+    });
+
+    const postResponses = {
+      lighter: "ดีใจด้วยนะที่หัวใจของคุณเบาลง ขอให้ความสดใสกลับคืนมาสู่คุณ 🌿",
+      calmer: "ความสงบคือบ้านที่ปลอดภัยของใจคุณ หายใจเข้าลึกๆ แล้วเริ่มต้นใหม่อย่างผ่อนคลายนะ 🌤️",
+      okay: "ก้าวเล็กๆ ก็คือการก้าวไปข้างหน้า ค่อยๆ ดูแลใจตัวเองไปทีละวันนะ 🤍",
+      need_time: "ไม่เป็นไรเลย ใจดีกับตัวเองเยอะๆ นะ การเยียวยาต้องใช้เวลา และคุณไม่ได้อยู่คนเดียว 🫂"
+    };
+
+    const postMoodBtns = document.querySelectorAll('.post-mood-btn');
+    postMoodBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const respKey = btn.dataset.resp;
+        const msg = postResponses[respKey] || "ขอบคุณที่อนุญาตให้ตัวเองได้ปลดปล่อย ความรู้สึกของคุณมีความหมายเสมอ 🤍";
+        
+        if (postCheckinCard) postCheckinCard.classList.add('hidden');
+        if (affirmationQuoteText) {
+          affirmationQuoteText.textContent = msg;
+          affirmationQuoteText.classList.remove('italic');
+          affirmationQuoteText.classList.add('text-sm', 'text-violet-200', 'font-normal');
+        }
+
+        playAsmrKeystroke();
+
+        clearTimeout(affirmationBox._hideTimer);
+        affirmationBox._hideTimer = setTimeout(() => {
+          affirmationBox.classList.add('opacity-0');
+        }, 5000);
+      });
+    });
+
 
     // --- TEXT VENTING & DISSOLVE LOGIC ---
     const ventInput = document.getElementById('ventInput');
@@ -845,13 +969,19 @@
       "\"วันนี้คุณได้ทำดีที่สุดแล้ว อนุญาตให้ตัวเองได้พักผ่อนอย่างเต็มที่\""
     ];
 
+    const postCheckinCard = document.getElementById('postCheckinCard');
+    const affirmationQuoteText = document.getElementById('affirmationQuoteText');
+
     function showRandomAffirmation() {
       const randomText = affirmations[Math.floor(Math.random() * affirmations.length)];
-      affirmationBox.textContent = randomText;
+      if (postCheckinCard) postCheckinCard.classList.remove('hidden');
+      if (affirmationQuoteText) affirmationQuoteText.textContent = randomText;
       affirmationBox.classList.remove('opacity-0');
-      setTimeout(() => {
+      
+      clearTimeout(affirmationBox._hideTimer);
+      affirmationBox._hideTimer = setTimeout(() => {
         affirmationBox.classList.add('opacity-0');
-      }, 7000);
+      }, 10000);
     }
 
     function recordRelease() {
