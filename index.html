@@ -141,6 +141,63 @@
       caret-color: #a78bfa;
       text-shadow: 0 0 8px rgba(167, 139, 250, 0.3);
     }
+
+    /* Golden Dawn / Warm Ivory Theme (Light Mode) */
+    body.theme-gold {
+      background: radial-gradient(ellipse at 50% 15%, #FAF7F0 0%, #F3ECE0 50%, #EAE0D0 100%) !important;
+      color: #382F26 !important;
+    }
+
+    body.theme-gold .ambient-glow {
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.16) 0%, rgba(251, 191, 36, 0.08) 45%, transparent 70%) !important;
+    }
+
+    body.theme-gold .glass-btn {
+      background: rgba(255, 255, 255, 0.7) !important;
+      border-color: rgba(217, 180, 130, 0.45) !important;
+      color: #5C4A38 !important;
+      box-shadow: 0 2px 8px rgba(180, 140, 90, 0.08) !important;
+    }
+    body.theme-gold .glass-btn:hover {
+      background: rgba(255, 255, 255, 0.95) !important;
+      border-color: rgba(217, 119, 6, 0.55) !important;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.3) !important;
+      color: #2E251C !important;
+    }
+
+    body.theme-gold .glass-panel {
+      background: rgba(255, 253, 248, 0.94) !important;
+      border-color: rgba(217, 180, 130, 0.45) !important;
+      color: #382F26 !important;
+      box-shadow: 0 10px 35px rgba(180, 140, 90, 0.15) !important;
+    }
+
+    body.theme-gold #ventInput {
+      background: rgba(255, 255, 255, 0.65) !important;
+      border-color: rgba(217, 180, 130, 0.4) !important;
+      color: #2E251C !important;
+      box-shadow: inset 0 2px 10px rgba(180, 140, 90, 0.08) !important;
+      caret-color: #D97706 !important;
+      text-shadow: 0 0 10px rgba(245, 158, 11, 0.25) !important;
+    }
+    body.theme-gold #ventInput::placeholder {
+      color: #A39281 !important;
+    }
+    body.theme-gold #ventInput:focus {
+      border-color: rgba(217, 119, 6, 0.5) !important;
+    }
+
+    body.theme-gold .text-slate-100 { color: #2E251C !important; }
+    body.theme-gold .text-slate-300 { color: #5C4A38 !important; }
+    body.theme-gold .text-slate-400 { color: #786552 !important; }
+    body.theme-gold .text-slate-500 { color: #9C8C7C !important; }
+    body.theme-gold .text-slate-600 { color: #A89A8C !important; }
+    body.theme-gold .border-white\/5 { border-color: rgba(180, 140, 90, 0.18) !important; }
+    body.theme-gold .border-white\/10 { border-color: rgba(180, 140, 90, 0.25) !important; }
+    body.theme-gold .text-violet-200 { color: #B45309 !important; }
+    body.theme-gold .text-violet-300 { color: #D97706 !important; }
+    body.theme-gold .text-violet-400 { color: #D97706 !important; }
+    body.theme-gold .bg-black\/25 { background-color: rgba(255, 255, 255, 0.6) !important; }
   </style>
 </head>
 <body class="relative flex flex-col items-center justify-between min-h-screen p-4 sm:p-8 select-none">
@@ -199,6 +256,12 @@
         <span id="asmrBtnLabel">เสียงพิมพ์ ASMR</span>
       </button>
 
+      <!-- Theme Switcher Button -->
+      <button id="themeToggleBtn" class="glass-btn px-3 py-1.5 rounded-full text-xs text-slate-300 flex items-center space-x-1.5" title="สลับธีม: ราตรีมืด / แสงทองอบอุ่น">
+        <span id="themeIcon">☀️</span>
+        <span id="themeLabel">แสงทอง</span>
+      </button>
+
       <!-- Preferences / Settings Panel Toggle -->
       <button id="settingsToggleBtn" class="glass-btn p-2 rounded-full text-slate-400 hover:text-slate-200" title="ตั้งค่าเสียง ความเร็ว และเอฟเฟกต์">
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -225,6 +288,21 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
+    </div>
+
+    <!-- Theme Mode Setting -->
+    <div class="mb-4">
+      <label class="block text-xs text-slate-400 mb-2">บรรยากาศและโทนสี (Color Theme)</label>
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <button id="optThemeDark" class="py-1.5 rounded-lg border border-violet-500 bg-violet-500/20 text-violet-200 transition flex items-center justify-center space-x-1.5">
+          <span>🌌</span>
+          <span>ราตรีมืด (Midnight)</span>
+        </button>
+        <button id="optThemeGold" class="py-1.5 rounded-lg border border-white/10 hover:border-amber-500/40 text-slate-400 transition flex items-center justify-center space-x-1.5">
+          <span>☀️</span>
+          <span>แสงทองนวล (Golden)</span>
+        </button>
+      </div>
     </div>
 
     <!-- ASMR Typing Sound Style -->
@@ -405,6 +483,7 @@
   <!-- Application Logic & Sound Engine -->
   <script>
     // --- APP STATE ---
+    let isGoldTheme = false;
     let currentTheme = 'stardust';
     let currentSpeedConfig = {
       idleWait: 2800,
@@ -460,10 +539,14 @@
           this.size = Math.random() * 2.5 + 1.2;
           this.alpha = 0.85;
           this.decay = Math.random() * 0.02 + 0.015;
-          const colors = palette.typing;
+          const colors = isGoldTheme 
+            ? ['217, 119, 6', '245, 158, 11', '252, 211, 77', '212, 175, 55']
+            : palette.typing;
           this.color = colors[Math.floor(Math.random() * colors.length)];
         } else if (type === 'dissolve') {
-          const colors = palette.dissolve;
+          const colors = isGoldTheme
+            ? ['245, 158, 11', '217, 119, 6', '251, 191, 36', '253, 230, 138', '212, 175, 55']
+            : palette.dissolve;
           this.color = colors[Math.floor(Math.random() * colors.length)];
 
           if (currentTheme === 'embers') {
@@ -487,9 +570,11 @@
           this.vx = (Math.random() - 0.5) * 0.3;
           this.vy = -Math.random() * 0.4 - 0.1;
           this.size = Math.random() * 1.8 + 0.5;
-          this.alpha = Math.random() * 0.35 + 0.1;
+          this.alpha = isGoldTheme ? (Math.random() * 0.4 + 0.15) : (Math.random() * 0.35 + 0.1);
           this.decay = 0;
-          this.color = '148, 163, 184';
+          this.color = isGoldTheme 
+            ? (Math.random() > 0.5 ? '217, 180, 130' : '245, 158, 11')
+            : '148, 163, 184';
         }
       }
 
@@ -509,8 +594,8 @@
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(${this.color}, ${Math.max(0, this.alpha)})`;
-        ctx.shadowBlur = this.type !== 'ambient' ? (currentTheme === 'mist' ? 18 : 12) : 4;
-        ctx.shadowColor = `rgba(${this.color}, 0.8)`;
+        ctx.shadowBlur = this.type !== 'ambient' ? (currentTheme === 'mist' && !isGoldTheme ? 18 : 12) : 4;
+        ctx.shadowColor = isGoldTheme ? 'rgba(245, 158, 11, 0.6)' : `rgba(${this.color}, 0.8)`;
         ctx.fill();
         ctx.shadowBlur = 0;
       }
@@ -601,14 +686,22 @@
     const closeSparkPromptBtn = document.getElementById('closeSparkPromptBtn');
 
     let currentPromptIdx = -1;
+    let promptDeck = [];
+
+    // Fisher-Yates truly random shuffle: guarantees pure randomness with zero immediate repeats
+    function reshufflePrompts() {
+      promptDeck = Array.from({ length: mindfulPrompts.length }, (_, i) => i);
+      for (let i = promptDeck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [promptDeck[i], promptDeck[j]] = [promptDeck[j], promptDeck[i]];
+      }
+    }
 
     function getNextRandomPromptIndex() {
-      if (mindfulPrompts.length <= 1) return 0;
-      let newIdx;
-      do {
-        newIdx = Math.floor(Math.random() * mindfulPrompts.length);
-      } while (newIdx === currentPromptIdx);
-      return newIdx;
+      if (promptDeck.length === 0) {
+        reshufflePrompts();
+      }
+      return promptDeck.pop();
     }
 
     function displayPrompt(index) {
@@ -618,8 +711,13 @@
       mainPromptTitle.style.opacity = '0';
       setTimeout(() => {
         mainPromptTitle.textContent = `"${text}"`;
-        mainPromptTitle.classList.remove('text-slate-300');
-        mainPromptTitle.classList.add('text-violet-200');
+        if (isGoldTheme) {
+          mainPromptTitle.classList.remove('text-slate-300', 'text-violet-200');
+          mainPromptTitle.classList.add('text-amber-800');
+        } else {
+          mainPromptTitle.classList.remove('text-slate-300', 'text-amber-800');
+          mainPromptTitle.classList.add('text-violet-200');
+        }
         mainPromptTitle.style.opacity = '1';
       }, 250);
 
@@ -646,13 +744,84 @@
       mainPromptTitle.style.opacity = '0';
       setTimeout(() => {
         mainPromptTitle.textContent = DEFAULT_PROMPT_TITLE;
-        mainPromptTitle.classList.remove('text-violet-200');
+        mainPromptTitle.classList.remove('text-violet-200', 'text-amber-800');
         mainPromptTitle.classList.add('text-slate-300');
         mainPromptTitle.style.opacity = '1';
       }, 250);
 
       playAsmrKeystroke();
     });
+
+    // --- THEME SWITCHER LOGIC (MIDNIGHT DARK vs. GOLDEN DAWN IVORY) ---
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    const themeLabel = document.getElementById('themeLabel');
+    const optThemeDark = document.getElementById('optThemeDark');
+    const optThemeGold = document.getElementById('optThemeGold');
+
+    function setTheme(mode) {
+      if (mode === 'gold') {
+        isGoldTheme = true;
+        document.body.classList.add('theme-gold');
+        if (themeIcon) themeIcon.textContent = '🌙';
+        if (themeLabel) themeLabel.textContent = 'ราตรีมืด';
+
+        if (optThemeGold) {
+          optThemeGold.className = "py-1.5 rounded-lg border border-amber-500 bg-amber-500/20 text-amber-800 font-medium transition flex items-center justify-center space-x-1.5";
+        }
+        if (optThemeDark) {
+          optThemeDark.className = "py-1.5 rounded-lg border border-stone-300/60 hover:border-amber-500/40 text-stone-600 transition flex items-center justify-center space-x-1.5";
+        }
+
+        glowBackdrop.className = "absolute -inset-1 rounded-3xl bg-gradient-to-r from-amber-500/15 via-yellow-500/15 to-orange-400/15 opacity-0 blur-xl transition-opacity duration-700 pointer-events-none";
+
+        if (!mainPromptTitle.classList.contains('text-slate-300')) {
+          mainPromptTitle.classList.remove('text-violet-200');
+          mainPromptTitle.classList.add('text-amber-800');
+        }
+      } else {
+        isGoldTheme = false;
+        document.body.classList.remove('theme-gold');
+        if (themeIcon) themeIcon.textContent = '☀️';
+        if (themeLabel) themeLabel.textContent = 'แสงทอง';
+
+        if (optThemeDark) {
+          optThemeDark.className = "py-1.5 rounded-lg border border-violet-500 bg-violet-500/20 text-violet-200 transition flex items-center justify-center space-x-1.5";
+        }
+        if (optThemeGold) {
+          optThemeGold.className = "py-1.5 rounded-lg border border-white/10 hover:border-amber-500/40 text-slate-400 transition flex items-center justify-center space-x-1.5";
+        }
+
+        glowBackdrop.className = "absolute -inset-1 rounded-3xl bg-gradient-to-r " + PALETTES[currentTheme].glowBackdrop + " opacity-0 blur-xl transition-opacity duration-700 pointer-events-none";
+
+        if (!mainPromptTitle.classList.contains('text-slate-300')) {
+          mainPromptTitle.classList.remove('text-amber-800');
+          mainPromptTitle.classList.add('text-violet-200');
+        }
+      }
+
+      // Re-populate ambient particles with the new theme colors
+      particles = [];
+      for (let i = 0; i < 45; i++) {
+        particles.push(new Particle(null, null, 'ambient'));
+      }
+
+      playAsmrKeystroke();
+    }
+
+    if (themeToggleBtn) {
+      themeToggleBtn.addEventListener('click', () => {
+        setTheme(isGoldTheme ? 'dark' : 'gold');
+      });
+    }
+
+    if (optThemeDark) {
+      optThemeDark.addEventListener('click', () => setTheme('dark'));
+    }
+
+    if (optThemeGold) {
+      optThemeGold.addEventListener('click', () => setTheme('gold'));
+    }
 
 
     // --- TEXT VENTING & DISSOLVE LOGIC ---
