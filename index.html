@@ -65,23 +65,27 @@
       100% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
     }
 
-    /* Dissolving text transitions */
+    /* Dissolving text transitions - Ultra-gentle Mist & Breeze Dissolve */
     .fade-dissolving {
-      transition: opacity var(--dissolve-duration, 3.5s) cubic-bezier(0.4, 0, 0.2, 1), 
-                  filter var(--dissolve-duration, 3.5s) cubic-bezier(0.4, 0, 0.2, 1), 
-                  transform var(--dissolve-duration, 3.5s) ease-out !important;
+      transition: opacity var(--dissolve-duration, 3.8s) cubic-bezier(0.25, 0.1, 0.25, 1), 
+                  filter var(--dissolve-duration, 3.8s) cubic-bezier(0.25, 0.1, 0.25, 1), 
+                  transform var(--dissolve-duration, 3.8s) cubic-bezier(0.16, 1, 0.3, 1),
+                  letter-spacing var(--dissolve-duration, 3.8s) ease-out !important;
       opacity: 0 !important;
-      filter: blur(16px) !important;
-      transform: translateY(-16px) scale(0.98) !important;
+      filter: blur(24px) brightness(1.22) !important;
+      transform: translate(26px, -22px) skewX(-3deg) scale(1.02) !important;
+      letter-spacing: 0.14em !important;
     }
 
     .instant-dissolving {
-      transition: opacity 1.8s cubic-bezier(0.2, 0.8, 0.2, 1), 
-                  filter 1.8s cubic-bezier(0.2, 0.8, 0.2, 1), 
-                  transform 2s ease-out !important;
+      transition: opacity 2.2s cubic-bezier(0.25, 0.1, 0.25, 1), 
+                  filter 2.2s cubic-bezier(0.25, 0.1, 0.25, 1), 
+                  transform 2.4s cubic-bezier(0.16, 1, 0.3, 1),
+                  letter-spacing 2.2s ease-out !important;
       opacity: 0 !important;
-      filter: blur(20px) !important;
-      transform: translateY(-28px) scale(1.02) !important;
+      filter: blur(28px) brightness(1.28) !important;
+      transform: translate(34px, -30px) skewX(-4deg) scale(1.04) !important;
+      letter-spacing: 0.18em !important;
     }
 
     /* Custom smooth textarea scrollbar */
@@ -244,10 +248,12 @@
 
   <!-- Top Navigation & Controls -->
   <header class="w-full max-w-4xl flex items-center justify-between z-10 zen-hide transition-all duration-500">
-    <!-- Brand / Title -->
+    <!-- Brand & Gratitude Constellation Stars -->
     <div class="flex items-center space-x-3">
       <span class="inline-block w-2.5 h-2.5 rounded-full bg-violet-400 shadow-[0_0_10px_#a78bfa] animate-pulse"></span>
       <h1 class="text-sm tracking-widest font-light uppercase text-slate-400">Vent & Let Go</h1>
+      <!-- Guiding Stars Container -->
+      <div id="gratitudeConstellation" class="flex items-center space-x-1 pl-2"></div>
     </div>
 
     <!-- Right Control Bar -->
@@ -503,6 +509,23 @@
             <button class="post-mood-btn px-3 py-1 rounded-full border border-white/10 hover:border-violet-400/60 text-slate-300 hover:text-violet-300 transition" data-resp="okay">🤍 พอไหวขึ้นนิดหน่อย</button>
             <button class="post-mood-btn px-3 py-1 rounded-full border border-white/10 hover:border-amber-400/60 text-slate-300 hover:text-amber-300 transition" data-resp="need_time">🫂 ยังต้องการเวลา</button>
           </div>
+          <!-- Gratitude Anchor Trigger -->
+          <div class="mt-3 pt-2.5 border-t border-white/5 flex items-center justify-center">
+            <button id="openGratitudeBtn" class="text-[11px] text-amber-300/80 hover:text-amber-200 flex items-center space-x-1.5 transition">
+              <span class="text-xs">✨</span>
+              <span>ปลูกเมล็ดพันธุ์แห่งความหวัง (Gratitude Anchor)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Gratitude Input Modal Card (Hidden by default) -->
+        <div id="gratitudeCard" class="glass-panel p-4 rounded-2xl w-full border border-amber-500/30 shadow-xl hidden mb-2 transition-all duration-300">
+          <p class="text-xs text-amber-200 mb-1 font-medium">✨ สิ่งดีๆ หรือเรื่องที่รู้สึกขอบคุณ 1 เรื่องในวันนี้</p>
+          <p class="text-[11px] text-slate-400 mb-2.5">แม้เป็นเรื่องเล็กน้อยเพียงใด มันจะกลายเป็นดวงดาวที่คอยส่องสว่างเคียงข้างคุณ</p>
+          <div class="flex items-center space-x-2">
+            <input id="gratitudeInput" type="text" placeholder="เช่น กาแฟแก้วโปรด, ลมเย็นๆ, เพลงเพราะๆ..." class="flex-1 bg-black/30 border border-amber-500/30 rounded-xl px-3 py-1.5 text-xs text-slate-100 outline-none focus:border-amber-400" />
+            <button id="submitGratitudeBtn" class="glass-btn px-3 py-1.5 rounded-xl text-xs text-amber-300 hover:text-white border-amber-500/40 bg-amber-500/10">ส่งดาว 🌟</button>
+          </div>
         </div>
         <p id="affirmationQuoteText" class="text-xs text-slate-400 font-light italic mt-1"></p>
       </div>
@@ -599,23 +622,21 @@
             : palette.dissolve;
           this.color = colors[Math.floor(Math.random() * colors.length)];
 
-          if (currentTheme === 'embers') {
-            this.vx = (Math.random() - 0.5) * 2.0;
-            this.vy = -Math.random() * 3.5 - 1.2;
-            this.size = Math.random() * 3.0 + 1.0;
-            this.decay = Math.random() * 0.015 + 0.01;
-          } else if (currentTheme === 'mist') {
-            this.vx = (Math.random() - 0.5) * 1.4;
-            this.vy = -Math.random() * 1.5 - 0.4;
-            this.size = Math.random() * 6.0 + 3.0;
-            this.decay = Math.random() * 0.008 + 0.005;
+          // Wind breeze vector: drift softly to the right and float upward
+          this.vx = Math.random() * 1.8 + 0.5;
+          this.vy = -(Math.random() * 1.6 + 0.4);
+          this.swaySeed = Math.random() * 100;
+
+          // Mix of expanding soft mist clouds and fine glowing motes
+          if (Math.random() > 0.35) {
+            this.size = Math.random() * 7.0 + 3.5;
+            this.alpha = 0.6;
+            this.decay = Math.random() * 0.006 + 0.0035; // Lingers gently like vapor
           } else {
-            this.vx = (Math.random() - 0.5) * 2.4;
-            this.vy = -Math.random() * 3.0 - 0.8;
-            this.size = Math.random() * 3.2 + 1.2;
-            this.decay = Math.random() * 0.012 + 0.008;
+            this.size = Math.random() * 2.5 + 1.0;
+            this.alpha = 0.85;
+            this.decay = Math.random() * 0.01 + 0.005;
           }
-          this.alpha = 0.95;
         } else {
           this.vx = (Math.random() - 0.5) * 0.3;
           this.vy = -Math.random() * 0.4 - 0.1;
@@ -629,14 +650,22 @@
       }
 
       update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        if (this.type !== 'ambient') {
+        if (this.type === 'dissolve') {
+          // Gentle sinusoidal breeze sway
+          this.x += this.vx + Math.sin(this.y * 0.015 + (this.swaySeed || 0)) * 0.7;
+          this.y += this.vy;
+          this.size += 0.035; // Expands softly like mist dispersing
           this.alpha -= this.decay;
         } else {
-          if (this.y < -10) this.y = height + 10;
-          if (this.x < -10) this.x = width + 10;
-          if (this.x > width + 10) this.x = -10;
+          this.x += this.vx;
+          this.y += this.vy;
+          if (this.type !== 'ambient') {
+            this.alpha -= this.decay;
+          } else {
+            if (this.y < -10) this.y = height + 10;
+            if (this.x < -10) this.x = width + 10;
+            if (this.x > width + 10) this.x = -10;
+          }
         }
       }
 
@@ -946,6 +975,70 @@
         }, 5000);
       });
     });
+
+    // --- GRATITUDE ANCHOR LOGIC ---
+    const openGratitudeBtn = document.getElementById('openGratitudeBtn');
+    const gratitudeCard = document.getElementById('gratitudeCard');
+    const gratitudeInput = document.getElementById('gratitudeInput');
+    const submitGratitudeBtn = document.getElementById('submitGratitudeBtn');
+    const gratitudeConstellation = document.getElementById('gratitudeConstellation');
+
+    if (openGratitudeBtn) {
+      openGratitudeBtn.addEventListener('click', () => {
+        if (postCheckinCard) postCheckinCard.classList.add('hidden');
+        if (gratitudeCard) {
+          gratitudeCard.classList.remove('hidden');
+          gratitudeInput.focus();
+        }
+        clearTimeout(affirmationBox._hideTimer);
+      });
+    }
+
+    function addGratitudeStar(text) {
+      if (!text.trim()) return;
+
+      const starBtn = document.createElement('div');
+      starBtn.className = "relative group cursor-pointer inline-flex items-center justify-center animate-bounce";
+      starBtn.title = text;
+      starBtn.innerHTML = `
+        <span class="text-xs text-amber-300 drop-shadow-[0_0_8px_#f59e0b]">⭐</span>
+        <div class="absolute top-6 left-1/2 -translate-x-1/2 glass-panel px-3 py-1.5 rounded-xl text-[11px] text-amber-100 whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 border border-amber-500/30 shadow-lg">
+          "${text}"
+        </div>
+      `;
+
+      gratitudeConstellation.appendChild(starBtn);
+      setTimeout(() => starBtn.classList.remove('animate-bounce'), 1500);
+
+      if (gratitudeCard) gratitudeCard.classList.add('hidden');
+      if (affirmationQuoteText) {
+        affirmationQuoteText.textContent = "ดาวแห่งความหวังของคุณถูกส่งขึ้นสู่ท้องฟ้าแล้ว ขอบคุณที่มองเห็นสิ่งดีๆ เสมอ 🌟";
+        affirmationQuoteText.classList.remove('italic');
+        affirmationQuoteText.classList.add('text-sm', 'text-amber-200', 'font-normal');
+      }
+
+      playAsmrKeystroke();
+
+      affirmationBox._hideTimer = setTimeout(() => {
+        affirmationBox.classList.add('opacity-0');
+      }, 5000);
+    }
+
+    if (submitGratitudeBtn) {
+      submitGratitudeBtn.addEventListener('click', () => {
+        addGratitudeStar(gratitudeInput.value);
+        gratitudeInput.value = '';
+      });
+    }
+
+    if (gratitudeInput) {
+      gratitudeInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          addGratitudeStar(gratitudeInput.value);
+          gratitudeInput.value = '';
+        }
+      });
+    }
 
 
     // --- TEXT VENTING & DISSOLVE LOGIC ---
