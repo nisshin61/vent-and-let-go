@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vent & Let Go - ปล่อยวางทุกความรู้สึก</title>
+  <!-- Google Fonts: Prompt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,200;0,300;0,400;0,500;1,200&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            prompt: ['Prompt', 'sans-serif'],
+          },
+          colors: {
+            midnight: '#07090e',
+            deepNavy: '#0c1017',
+            etherealPurple: '#161324',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * {
+      font-family: 'Prompt', sans-serif;
+      user-select: none;
+    }
+    textarea {
+      user-select: text;
+    }
+
+    /* Ambient background gradient animation */
+    body {
+      background: radial-gradient(ellipse at 50% 20%, #17152c 0%, #0c0f1d 45%, #05070c 100%);
+      background-attachment: fixed;
+      overflow: hidden;
+      min-height: 100vh;
+      color: #e2e8f0;
+      transition: background 1.5s ease;
+    }
+
+    /* Subtle pulsing aura */
+    .ambient-glow {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 65vw;
+      height: 65vh;
+      background: radial-gradient(circle, rgba(120, 119, 198, 0.08) 0%, rgba(56, 189, 248, 0.03) 40%, transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+      filter: blur(50px);
+      animation: pulseAura 12s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulseAura {
+      0% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.6; }
+      100% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+    }
+
+    /* Dissolving text transitions */
+    .fade-dissolving {
+      transition: opacity var(--dissolve-duration, 3.5s) cubic-bezier(0.4, 0, 0.2, 1), 
+                  filter var(--dissolve-duration, 3.5s) cubic-bezier(0.4, 0, 0.2, 1), 
+                  transform var(--dissolve-duration, 3.5s) ease-out !important;
+      opacity: 0 !important;
+      filter: blur(16px) !important;
+      transform: translateY(-16px) scale(0.98) !important;
+    }
+
+    .instant-dissolving {
+      transition: opacity 1.8s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                  filter 1.8s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                  transform 2s ease-out !important;
+      opacity: 0 !important;
+      filter: blur(20px) !important;
+      transform: translateY(-28px) scale(1.02) !important;
+    }
+
+    /* Custom smooth textarea scrollbar */
+    textarea::-webkit-scrollbar {
+      width: 4px;
+    }
+    textarea::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 9999px;
+    }
+
+    /* Glass UI components */
+    .glass-btn {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-btn:hover {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(255, 255, 255, 0.22);
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+      transform: translateY(-1px);
+    }
+    .glass-btn:active {
+      transform: translateY(1px);
+    }
+
+    .glass-panel {
+      background: rgba(13, 16, 26, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+    }
+
+    /* Breathing Circle Animation */
+    .breath-ring {
+      transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1), opacity 2s ease, border-color 2s ease;
+    }
+
+    /* Zen Mode Hide Utilities */
+    .zen-active .zen-hide {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transform: translateY(-10px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .zen-active #zenExitNotice {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Caret glow */
+    .glowing-input {
+      caret-color: #a78bfa;
+      text-shadow: 0 0 8px rgba(167, 139, 250, 0.3);
+    }
+  </style>
+</head>
+<body class="relative flex flex-col items-center justify-between min-h-screen p-4 sm:p-8 select-none">
+
+  <!-- Ambient Light Effect Layer -->
+  <div class="ambient-glow"></div>
+
+  <!-- Background Interactive Particles Canvas -->
+  <canvas id="particleCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+  <!-- Zen Mode Floating Exit Indicator -->
+  <div id="zenExitNotice" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 opacity-0 pointer-events-none transition-opacity duration-700">
+    <button id="exitZenBtn" class="glass-btn px-4 py-1.5 rounded-full text-xs text-slate-400 hover:text-white flex items-center space-x-2 shadow-lg">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+      <span>ออกจากโหมด Zen (Esc)</span>
+    </button>
+  </div>
+
+  <!-- Top Navigation & Controls -->
+  <header class="w-full max-w-4xl flex items-center justify-between z-10 zen-hide transition-all duration-500">
+    <!-- Brand / Title -->
+    <div class="flex items-center space-x-3">
+      <span class="inline-block w-2.5 h-2.5 rounded-full bg-violet-400 shadow-[0_0_10px_#a78bfa] animate-pulse"></span>
+      <h1 class="text-sm tracking-widest font-light uppercase text-slate-400">Vent & Let Go</h1>
+    </div>
+
+    <!-- Right Control Bar -->
+    <div class="flex items-center space-x-2 sm:space-x-3">
+      
+      <!-- Breathing Guide Toggle -->
+      <button id="breathToggleBtn" class="glass-btn px-3 py-1.5 rounded-full text-xs text-slate-300 flex items-center space-x-1.5" title="เปิด/ปิด วงแหวนนำฝึกจังหวะการหายใจ">
+        <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9" stroke-width="1.5" />
+          <path stroke-linecap="round" stroke-width="1.5" d="M12 7v5l3 3" />
+        </svg>
+        <span id="breathBtnLabel">ฝึกหายใจ</span>
+      </button>
+
+      <!-- Ambient Sound Button -->
+      <button id="soundToggleBtn" class="glass-btn px-3 py-1.5 rounded-full text-xs text-slate-300 flex items-center space-x-1.5" title="เปิด/ปิดเสียงบรรยากาศ">
+        <svg id="soundIconOff" class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+        </svg>
+        <svg id="soundIconOn" class="w-3.5 h-3.5 text-violet-400 hidden animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+        </svg>
+        <span id="soundLabel">เสียงบรรยากาศ</span>
+      </button>
+
+      <!-- ASMR Typing Sound Button -->
+      <button id="asmrToggleBtn" class="glass-btn px-3 py-1.5 rounded-full text-xs text-slate-300 flex items-center space-x-1.5" title="เปิด/ปิดเสียงเคาะคีย์บอร์ด ASMR บำบัด">
+        <span class="text-xs">⌨️</span>
+        <span id="asmrBtnLabel">เสียงพิมพ์ ASMR</span>
+      </button>
+
+      <!-- Preferences / Settings Panel Toggle -->
+      <button id="settingsToggleBtn" class="glass-btn p-2 rounded-full text-slate-400 hover:text-slate-200" title="ตั้งค่าเสียง ความเร็ว และเอฟเฟกต์">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+        </svg>
+      </button>
+
+      <!-- Zen Fullscreen Button -->
+      <button id="zenModeBtn" class="glass-btn p-2 rounded-full text-slate-400 hover:text-slate-200" title="เข้าสู่โหมด Zen เต็มจอ">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+        </svg>
+      </button>
+
+    </div>
+  </header>
+
+  <!-- Preferences Floating Dropdown Modal -->
+  <div id="settingsPanel" class="fixed top-18 right-6 sm:right-12 z-40 glass-panel p-5 rounded-2xl w-84 shadow-2xl opacity-0 pointer-events-none transition-all duration-300 transform scale-95 border border-white/10">
+    <div class="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
+      <h3 class="text-xs uppercase tracking-wider text-slate-300 font-medium">ตั้งค่าระบบ</h3>
+      <button id="closeSettingsBtn" class="text-slate-500 hover:text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- ASMR Typing Sound Style -->
+    <div class="mb-4">
+      <label class="block text-xs text-slate-400 mb-2">เสียงพิมพ์ ASMR ตอบรับ (Typing Sound)</label>
+      <div class="grid grid-cols-3 gap-1.5 text-xs">
+        <button class="asmr-style-opt active-opt py-1.5 rounded-lg border border-violet-500 bg-violet-500/20 text-violet-200 transition" data-style="kalimba">
+          กระดิ่งคาลิมบา
+        </button>
+        <button class="asmr-style-opt py-1.5 rounded-lg border border-white/10 hover:border-violet-500/40 text-slate-400 transition" data-style="droplet">
+          หยดน้ำ
+        </button>
+        <button class="asmr-style-opt py-1.5 rounded-lg border border-white/10 hover:border-violet-500/40 text-slate-400 transition" data-style="wood">
+          ไม้กระทบ
+        </button>
+      </div>
+    </div>
+
+    <!-- Ambient Sound Mode -->
+    <div class="mb-4">
+      <label class="block text-xs text-slate-400 mb-2">ประเภทเสียงบรรยากาศพื้นหลัง (Background Tone)</label>
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <button id="optAmbientDrone" class="py-1.5 rounded-lg border border-violet-500 bg-violet-500/20 text-violet-200 transition">
+          คลื่น 432Hz ลึก
+        </button>
+        <button id="optAmbientRain" class="py-1.5 rounded-lg border border-white/10 hover:border-violet-500/40 text-slate-400 transition">
+          เสียงฝนโปรยปราย
+        </button>
+      </div>
+    </div>
+
+    <!-- Dissolve Speed Options -->
+    <div class="mb-4">
+      <label class="block text-xs text-slate-400 mb-2">ความเร็วการเลือนหาย (Dissolve Speed)</label>
+      <div class="grid grid-cols-3 gap-1.5 text-xs">
+        <button class="speed-opt py-1.5 rounded-lg border border-white/10 hover:border-violet-500/40 text-slate-400 transition" data-speed="fast">
+          ฉับไว (1.2s)
+        </button>
+        <button class="speed-opt active-opt py-1.5 rounded-lg border border-violet-500 bg-violet-500/20 text-violet-200 transition" data-speed="normal">
+          ปกติ (2.8s)
+        </button>
+        <button class="speed-opt py-1.5 rounded-lg border border-white/10 hover:border-violet-500/40 text-slate-400 transition" data-speed="slow">
+          ช้าๆ (6.0s)
+        </button>
+      </div>
+    </div>
+
+    <!-- Particle Effect Themes -->
+    <div>
+      <label class="block text-xs text-slate-400 mb-2">รูปแบบการสลายตัว (Dissolve Style)</label>
+      <div class="grid grid-cols-3 gap-1.5 text-xs">
+        <button class="theme-opt active-opt py-2 px-1 rounded-lg border border-violet-500 bg-violet-500/20 text-violet-200 flex flex-col items-center transition" data-theme="stardust">
+          <span>✨</span>
+          <span class="mt-1 text-[11px]">ละอองดาว</span>
+        </button>
+        <button class="theme-opt py-2 px-1 rounded-lg border border-white/10 hover:border-violet-500/40 text-slate-400 flex flex-col items-center transition" data-theme="embers">
+          <span>🔥</span>
+          <span class="mt-1 text-[11px]">ประกายไฟ</span>
+        </button>
+        <button class="theme-opt py-2 px-1 rounded-lg border border-white/10 hover:border-violet-500/40 text-slate-400 flex flex-col items-center transition" data-theme="mist">
+          <span>🌫️</span>
+          <span class="mt-1 text-[11px]">สายหมอก</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Central Breathing Visualizer (Toggleable) -->
+  <div id="breathingGuideContainer" class="w-full max-w-sm flex flex-col items-center justify-center my-3 transition-all duration-700 hidden">
+    <div class="relative flex items-center justify-center w-28 h-28 my-2">
+      <div id="breathRing" class="breath-ring absolute inset-0 rounded-full border-2 border-cyan-400/40 bg-cyan-500/5 shadow-[0_0_20px_rgba(34,211,238,0.2)]"></div>
+      <div class="w-2.5 h-2.5 rounded-full bg-cyan-300 shadow-[0_0_8px_#67e8f9] animate-pulse"></div>
+    </div>
+    <p id="breathStepText" class="text-sm font-light text-cyan-200 tracking-wider">เตรียมพร้อม...</p>
+    <p id="breathTimerNum" class="text-xs text-cyan-400/70 font-mono mt-0.5">4</p>
+  </div>
+
+  <!-- Central Venting Canvas & Workspace -->
+  <main class="w-full max-w-2xl flex-1 flex flex-col justify-center items-center my-4 z-10 relative">
+    
+    <!-- Header Prompt & Mindful Spark Generator -->
+    <div id="instructionText" class="text-center mb-6 zen-hide transition-all duration-700 ease-in-out">
+      <p id="mainPromptTitle" class="text-slate-300 text-lg sm:text-xl font-light tracking-wide drop-shadow-sm transition-opacity duration-500">
+        พิมพ์ทุกสิ่งที่อยู่ในใจ... แล้วปล่อยให้มันค่อยๆ หายไป
+      </p>
+
+      <!-- Reflection Prompt Trigger Button -->
+      <div class="flex items-center justify-center mt-3">
+        <button id="sparkPromptBtn" class="glass-btn px-3 py-1 rounded-full text-xs text-violet-300/90 hover:text-white flex items-center space-x-1.5 transition-all duration-300">
+          <svg class="w-3.5 h-3.5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          </svg>
+          <span id="sparkPromptBtnText">จุดประกายความคิด (คำถามสะกิดใจ)</span>
+        </button>
+      </div>
+
+      <p class="text-[11px] text-slate-500 font-light mt-2 tracking-wider">
+        ที่ตรงนี้คือพื้นที่ปลอดภัยของคุณ ไม่มีใครเห็น และไม่มีการบันทึกสิ่งใด
+      </p>
+    </div>
+
+    <!-- Text Area Container with Floating Glow -->
+    <div class="w-full relative group">
+      <!-- Soft ambient backdrop around textarea -->
+      <div id="glowBackdrop" class="absolute -inset-1 rounded-3xl bg-gradient-to-r from-violet-600/10 via-indigo-600/10 to-sky-600/10 opacity-0 blur-xl transition-opacity duration-700 pointer-events-none"></div>
+
+      <!-- Main Venting Text Area -->
+      <textarea
+        id="ventInput"
+        rows="5"
+        class="glowing-input w-full p-6 sm:p-8 bg-black/25 backdrop-blur-md rounded-2xl border border-white/5 focus:border-violet-500/30 outline-none text-slate-100 text-lg sm:text-xl font-light leading-relaxed placeholder:text-slate-600 resize-none transition-all duration-300 shadow-[inset_0_2px_12px_rgba(0,0,0,0.5)]"
+        placeholder="เริ่มพิมพ์ความรู้สึก ความกังวล หรือเรื่องที่หนักใจไว้ตรงนี้..."
+        autofocus
+        spellcheck="false"
+      ></textarea>
+
+      <!-- Dissolve Status Indicator -->
+      <div id="timerIndicator" class="absolute bottom-4 right-5 flex items-center space-x-2 text-xs font-light text-slate-500 pointer-events-none opacity-0 transition-opacity duration-500">
+        <span class="inline-block w-1.5 h-1.5 rounded-full bg-slate-400 animate-ping"></span>
+        <span id="timerText">กำลังเริ่มสลายตัว...</span>
+      </div>
+    </div>
+
+    <!-- Quick Action: Let It Go (Instant Release Button) -->
+    <div class="mt-6 flex flex-col items-center">
+      <button
+        id="letItGoBtn"
+        class="glass-btn px-6 py-2.5 rounded-full text-sm font-light text-violet-300 hover:text-white flex items-center space-x-2.5 group opacity-0 pointer-events-none transition-all duration-700"
+        title="ปล่อยวางและให้ข้อความทั้งหมดสลายไปทันที"
+      >
+        <svg class="w-4 h-4 text-violet-400 group-hover:rotate-45 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+        </svg>
+        <span>ปล่อยวางทันที (Let it go)</span>
+      </button>
+
+      <!-- Calming Thought / Breathing Quote -->
+      <div id="affirmationBox" class="text-center mt-4 text-sm text-slate-400 font-light opacity-0 transition-opacity duration-1000 max-w-md px-4">
+        "ทุกสิ่งเกิดขึ้น ตั้งอยู่ และผ่านพ้นไป... หายใจเข้าลึกๆ แล้วเริ่มต้นใหม่อย่างเบาสบาย"
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer Information & Release Counter -->
+  <footer class="w-full max-w-4xl flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 font-light z-10 pt-4 border-t border-white/5 space-y-2 sm:space-y-0 zen-hide transition-all duration-500">
+    <!-- Privacy indicator -->
+    <div class="flex items-center space-x-2">
+      <svg class="w-3.5 h-3.5 text-emerald-500/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+      </svg>
+      <span>ความปลอดภัย 100%: ไม่มีการบันทึกข้อมูลใดๆ ทั้งสิ้น</span>
+    </div>
+
+    <!-- Release Counter -->
+    <div id="releaseCounterDisplay" class="flex items-center space-x-1.5 text-slate-400">
+      <span class="text-base">🌱</span>
+      <span>ปล่อยวางไปแล้วในเซสชันนี้:</span>
+      <span id="releaseCountNum" class="font-medium text-violet-300">0</span>
+      <span>เรื่อง</span>
+    </div>
+  </footer>
+
+  <!-- Application Logic & Sound Engine -->
+  <script>
+    // --- APP STATE ---
+    let currentTheme = 'stardust';
+    let currentSpeedConfig = {
+      idleWait: 2800,
+      fadeDuration: 3500
+    };
+    let releaseCount = 0;
+    let isZenMode = false;
+    let isAsmrTypingActive = true; // Enabled by default for relaxing feedback
+    let currentAsmrStyle = 'kalimba'; // 'kalimba' | 'droplet' | 'wood'
+
+    // --- PARTICLE SYSTEM ---
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let width, height;
+
+    function resizeCanvas() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const PALETTES = {
+      stardust: {
+        typing: ['167, 139, 250', '125, 211, 252', '192, 132, 252'],
+        dissolve: ['192, 132, 252', '167, 139, 250', '244, 208, 111', '147, 197, 253'],
+        glowBackdrop: 'from-violet-600/10 via-indigo-600/10 to-sky-600/10'
+      },
+      embers: {
+        typing: ['251, 146, 60', '252, 211, 77', '248, 113, 113'],
+        dissolve: ['249, 115, 22', '239, 68, 68', '251, 191, 36', '245, 158, 11'],
+        glowBackdrop: 'from-amber-600/10 via-orange-600/10 to-rose-600/10'
+      },
+      mist: {
+        typing: ['148, 163, 184', '186, 230, 253', '203, 213, 225'],
+        dissolve: ['203, 213, 225', '148, 163, 184', '186, 230, 253', '226, 232, 240'],
+        glowBackdrop: 'from-slate-600/10 via-cyan-600/10 to-teal-600/10'
+      }
+    };
+
+    class Particle {
+      constructor(x, y, type = 'ambient') {
+        this.x = x || Math.random() * width;
+        this.y = y || Math.random() * height;
+        this.type = type;
+
+        const palette = PALETTES[currentTheme];
+
+        if (type === 'typing') {
+          this.vx = (Math.random() - 0.5) * 1.8;
+          this.vy = -Math.random() * 2.2 - 0.6;
+          this.size = Math.random() * 2.5 + 1.2;
+          this.alpha = 0.85;
+          this.decay = Math.random() * 0.02 + 0.015;
+          const colors = palette.typing;
+          this.color = colors[Math.floor(Math.random() * colors.length)];
+        } else if (type === 'dissolve') {
+          const colors = palette.dissolve;
+          this.color = colors[Math.floor(Math.random() * colors.length)];
+
+          if (currentTheme === 'embers') {
+            this.vx = (Math.random() - 0.5) * 2.0;
+            this.vy = -Math.random() * 3.5 - 1.2;
+            this.size = Math.random() * 3.0 + 1.0;
+            this.decay = Math.random() * 0.015 + 0.01;
+          } else if (currentTheme === 'mist') {
+            this.vx = (Math.random() - 0.5) * 1.4;
+            this.vy = -Math.random() * 1.5 - 0.4;
+            this.size = Math.random() * 6.0 + 3.0;
+            this.decay = Math.random() * 0.008 + 0.005;
+          } else {
+            this.vx = (Math.random() - 0.5) * 2.4;
+            this.vy = -Math.random() * 3.0 - 0.8;
+            this.size = Math.random() * 3.2 + 1.2;
+            this.decay = Math.random() * 0.012 + 0.008;
+          }
+          this.alpha = 0.95;
+        } else {
+          this.vx = (Math.random() - 0.5) * 0.3;
+          this.vy = -Math.random() * 0.4 - 0.1;
+          this.size = Math.random() * 1.8 + 0.5;
+          this.alpha = Math.random() * 0.35 + 0.1;
+          this.decay = 0;
+          this.color = '148, 163, 184';
+        }
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.type !== 'ambient') {
+          this.alpha -= this.decay;
+        } else {
+          if (this.y < -10) this.y = height + 10;
+          if (this.x < -10) this.x = width + 10;
+          if (this.x > width + 10) this.x = -10;
+        }
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${this.color}, ${Math.max(0, this.alpha)})`;
+        ctx.shadowBlur = this.type !== 'ambient' ? (currentTheme === 'mist' ? 18 : 12) : 4;
+        ctx.shadowColor = `rgba(${this.color}, 0.8)`;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+    }
+
+    for (let i = 0; i < 45; i++) {
+      particles.push(new Particle(null, null, 'ambient'));
+    }
+
+    function spawnTypingParticles(count = 3) {
+      const rect = ventInput.getBoundingClientRect();
+      for (let i = 0; i < count; i++) {
+        const x = rect.left + Math.random() * rect.width;
+        const y = rect.top + Math.random() * rect.height * 0.7 + rect.height * 0.15;
+        particles.push(new Particle(x, y, 'typing'));
+      }
+    }
+
+    function spawnDissolveWave(count = 80) {
+      const rect = ventInput.getBoundingClientRect();
+      for (let i = 0; i < count; i++) {
+        const x = rect.left + Math.random() * rect.width;
+        const y = rect.top + Math.random() * rect.height;
+        particles.push(new Particle(x, y, 'dissolve'));
+      }
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, width, height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.update();
+        p.draw();
+        if (p.type !== 'ambient' && p.alpha <= 0) {
+          particles.splice(i, 1);
+        }
+      }
+      requestAnimationFrame(animateParticles);
+    }
+    requestAnimationFrame(animateParticles);
+
+
+    // --- MINDFUL REFLECTION PROMPT GENERATOR ---
+    const mindfulPrompts = [
+      "อะไรคือเรื่องที่คุณแบกไว้คนเดียวนานเกินไปแล้ว?",
+      "ถ้าสามารถให้อภัยตัวเองได้หนึ่งเรื่องในวันนี้ เรื่องนั้นคืออะไร?",
+      "มีความรู้สึกไหนที่คุณอยากบอกใครสักคน แต่ยังพูดไม่ออกบ้าง?",
+      "อะไรคือสิ่งที่คุณกำลังกังวล ทั้งที่มันอาจยังมาไม่ถึง?",
+      "หากความเหนื่อยล้าในใจคุณมีเสียง มันอยากบอกอะไรกับคุณตอนนี้?",
+      "มีเรื่องอะไรในอดีตที่คุณรู้สึกพร้อมแล้วที่จะปล่อยให้มันผ่านไป?",
+      "คำพูดของใครที่ทำให้คุณเจ็บปวด และถึงเวลาวางมันลงตรงนี้แล้วหรือยัง?",
+      "คุณกำลังรู้สึกกดดันตัวเองในเรื่องอะไรมากเกินไปหรือเปล่า?",
+      "ถ้าตอนนี้ไม่มีคำว่า 'ต้องเป็นแบบนั้นแบบนี้' คุณอยากรู้สึกอย่างไรมากที่สุด?"
+    ];
+
+    const mainPromptTitle = document.getElementById('mainPromptTitle');
+    const sparkPromptBtn = document.getElementById('sparkPromptBtn');
+    const sparkPromptBtnText = document.getElementById('sparkPromptBtnText');
+    let promptIndex = 0;
+
+    sparkPromptBtn.addEventListener('click', () => {
+      // Pick next prompt
+      promptIndex = (promptIndex + 1) % mindfulPrompts.length;
+      const chosen = mindfulPrompts[promptIndex];
+
+      mainPromptTitle.style.opacity = '0';
+      setTimeout(() => {
+        mainPromptTitle.textContent = `"${chosen}"`;
+        mainPromptTitle.classList.remove('text-slate-300');
+        mainPromptTitle.classList.add('text-violet-200');
+        mainPromptTitle.style.opacity = '1';
+        sparkPromptBtnText.textContent = "สุ่มคำถามอื่น ↻";
+      }, 300);
+
+      // Play gentle kalimba chime on prompt switch
+      playAsmrKeystroke();
+    });
+
+
+    // --- TEXT VENTING & DISSOLVE LOGIC ---
+    const ventInput = document.getElementById('ventInput');
+    const glowBackdrop = document.getElementById('glowBackdrop');
+    const timerIndicator = document.getElementById('timerIndicator');
+    const timerText = document.getElementById('timerText');
+    const letItGoBtn = document.getElementById('letItGoBtn');
+    const affirmationBox = document.getElementById('affirmationBox');
+    const releaseCountNum = document.getElementById('releaseCountNum');
+
+    let typingTimer = null;
+    let isDissolving = false;
+
+    const affirmations = [
+      "\"ทุกสิ่งเกิดขึ้น ตั้งอยู่ และผ่านพ้นไป... หายใจเข้าลึกๆ แล้วเริ่มต้นใหม่อย่างเบาสบาย\"",
+      "\"ปล่อยให้เรื่องหนักใจลอยหายไปกับสายลม จิตใจของคุณคู่ควรกับความสงบ\"",
+      "\"คุณเก่งมากแล้วที่พาตัวเองมาถึงตอนนี้ พักผ่อนและผ่อนคลายนะ\"",
+      "\"สิ่งที่ผ่านไปแล้วไม่สามารถทำร้ายคุณได้อีก ทุกอย่างกำลังดีขึ้นตามกาลเวลา\"",
+      "\"ปลดปล่อยพันธนาการในใจ แล้วโอบกอดความว่างเปล่าอันแสนสงบ\"",
+      "\"วันนี้คุณได้ทำดีที่สุดแล้ว อนุญาตให้ตัวเองได้พักผ่อนอย่างเต็มที่\""
+    ];
+
+    function showRandomAffirmation() {
+      const randomText = affirmations[Math.floor(Math.random() * affirmations.length)];
+      affirmationBox.textContent = randomText;
+      affirmationBox.classList.remove('opacity-0');
+      setTimeout(() => {
+        affirmationBox.classList.add('opacity-0');
+      }, 7000);
+    }
+
+    function recordRelease() {
+      releaseCount++;
+      releaseCountNum.textContent = releaseCount;
+      releaseCountNum.classList.add('scale-125', 'text-emerald-400');
+      setTimeout(() => {
+        releaseCountNum.classList.remove('scale-125', 'text-emerald-400');
+      }, 500);
+    }
+
+    function resetDissolveState() {
+      clearTimeout(typingTimer);
+      ventInput.classList.remove('fade-dissolving', 'instant-dissolving');
+      timerIndicator.classList.add('opacity-0');
+      isDissolving = false;
+    }
+
+    function startInactivityCountdown() {
+      clearTimeout(typingTimer);
+
+      if (!ventInput.value.trim()) {
+        letItGoBtn.classList.add('opacity-0', 'pointer-events-none');
+        glowBackdrop.classList.remove('opacity-100');
+        return;
+      }
+
+      letItGoBtn.classList.remove('opacity-0', 'pointer-events-none');
+      glowBackdrop.classList.add('opacity-100');
+
+      typingTimer = setTimeout(() => {
+        dissolveNaturally();
+      }, currentSpeedConfig.idleWait);
+    }
+
+    function dissolveNaturally() {
+      if (isDissolving || !ventInput.value.trim()) return;
+      isDissolving = true;
+
+      timerText.textContent = "กำลังระเหยไปในความมืด...";
+      timerIndicator.classList.remove('opacity-0');
+      
+      ventInput.style.setProperty('--dissolve-duration', `${currentSpeedConfig.fadeDuration / 1000}s`);
+      ventInput.classList.add('fade-dissolving');
+      spawnDissolveWave(60);
+      playDissolveChime();
+
+      setTimeout(() => {
+        ventInput.value = '';
+        ventInput.classList.remove('fade-dissolving');
+        timerIndicator.classList.add('opacity-0');
+        letItGoBtn.classList.add('opacity-0', 'pointer-events-none');
+        glowBackdrop.classList.remove('opacity-100');
+        isDissolving = false;
+        recordRelease();
+        showRandomAffirmation();
+      }, currentSpeedConfig.fadeDuration);
+    }
+
+    function dissolveImmediately() {
+      if (!ventInput.value.trim()) return;
+      clearTimeout(typingTimer);
+      isDissolving = true;
+
+      spawnDissolveWave(120);
+      playDissolveChime();
+
+      ventInput.classList.add('instant-dissolving');
+      timerText.textContent = "ปล่อยวางเรียบร้อยแล้ว...";
+      timerIndicator.classList.remove('opacity-0');
+
+      setTimeout(() => {
+        ventInput.value = '';
+        ventInput.classList.remove('instant-dissolving');
+        timerIndicator.classList.add('opacity-0');
+        letItGoBtn.classList.add('opacity-0', 'pointer-events-none');
+        glowBackdrop.classList.remove('opacity-100');
+        isDissolving = false;
+        recordRelease();
+        showRandomAffirmation();
+      }, 1800);
+    }
+
+    ventInput.addEventListener('input', () => {
+      if (isDissolving) resetDissolveState();
+      spawnTypingParticles(2);
+      startInactivityCountdown();
+    });
+
+    ventInput.addEventListener('keydown', (e) => {
+      if (isDissolving) resetDissolveState();
+      spawnTypingParticles(3);
+      if (isAsmrTypingActive && e.key.length === 1 || e.key === 'Backspace' || e.key === 'Enter' || e.key === ' ') {
+        playAsmrKeystroke();
+      }
+    });
+
+    letItGoBtn.addEventListener('click', dissolveImmediately);
+
+
+    // --- BREATHING GUIDE LOGIC ---
+    const breathToggleBtn = document.getElementById('breathToggleBtn');
+    const breathBtnLabel = document.getElementById('breathBtnLabel');
+    const breathingGuideContainer = document.getElementById('breathingGuideContainer');
+    const breathRing = document.getElementById('breathRing');
+    const breathStepText = document.getElementById('breathStepText');
+    const breathTimerNum = document.getElementById('breathTimerNum');
+
+    let isBreathingActive = false;
+    let breathInterval = null;
+    let breathPhase = 0;
+    let breathSecondsLeft = 4;
+
+    const BREATH_STEPS = [
+      { text: "หายใจเข้าช้าๆ...", seconds: 4, scale: "scale-150", opacity: "opacity-100", border: "border-cyan-400" },
+      { text: "กลั้นลมหายใจไว้...", seconds: 4, scale: "scale-150", opacity: "opacity-75", border: "border-teal-400" },
+      { text: "ค่อยๆ ผ่อนลมหายใจออก...", seconds: 4, scale: "scale-75", opacity: "opacity-40", border: "border-sky-400" },
+      { text: "หยุดพักอย่างสงบ...", seconds: 4, scale: "scale-75", opacity: "opacity-30", border: "border-slate-500" }
+    ];
+
+    function runBreathingStep() {
+      const step = BREATH_STEPS[breathPhase];
+      breathStepText.textContent = step.text;
+      breathTimerNum.textContent = breathSecondsLeft;
+      breathRing.className = `breath-ring absolute inset-0 rounded-full border-2 ${step.border} bg-cyan-500/5 shadow-[0_0_25px_rgba(34,211,238,0.25)] ${step.scale} ${step.opacity}`;
+    }
+
+    function toggleBreathingGuide() {
+      isBreathingActive = !isBreathingActive;
+      if (isBreathingActive) {
+        breathingGuideContainer.classList.remove('hidden');
+        breathToggleBtn.classList.add('border-cyan-400', 'bg-cyan-500/10', 'text-cyan-200');
+        breathBtnLabel.textContent = "ปิดฝึกหายใจ";
+        
+        breathPhase = 0;
+        breathSecondsLeft = BREATH_STEPS[0].seconds;
+        runBreathingStep();
+
+        breathInterval = setInterval(() => {
+          breathSecondsLeft--;
+          if (breathSecondsLeft <= 0) {
+            breathPhase = (breathPhase + 1) % BREATH_STEPS.length;
+            breathSecondsLeft = BREATH_STEPS[breathPhase].seconds;
+            runBreathingStep();
+          } else {
+            breathTimerNum.textContent = breathSecondsLeft;
+          }
+        }, 1000);
+      } else {
+        breathingGuideContainer.classList.add('hidden');
+        breathToggleBtn.classList.remove('border-cyan-400', 'bg-cyan-500/10', 'text-cyan-200');
+        breathBtnLabel.textContent = "ฝึกหายใจ";
+        clearInterval(breathInterval);
+      }
+    }
+
+    breathToggleBtn.addEventListener('click', toggleBreathingGuide);
+
+
+    // --- ZEN / FULLSCREEN MODE ---
+    const zenModeBtn = document.getElementById('zenModeBtn');
+    const exitZenBtn = document.getElementById('exitZenBtn');
+
+    function toggleZenMode() {
+      isZenMode = !isZenMode;
+      if (isZenMode) {
+        document.body.classList.add('zen-active');
+        if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+      } else {
+        document.body.classList.remove('zen-active');
+        if (document.fullscreenElement && document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+    }
+
+    zenModeBtn.addEventListener('click', toggleZenMode);
+    exitZenBtn.addEventListener('click', toggleZenMode);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isZenMode) {
+        toggleZenMode();
+      }
+    });
+
+
+    // --- SETTINGS PANEL ---
+    const settingsToggleBtn = document.getElementById('settingsToggleBtn');
+    const settingsPanel = document.getElementById('settingsPanel');
+    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+
+    settingsToggleBtn.addEventListener('click', () => {
+      const isClosed = settingsPanel.classList.contains('pointer-events-none');
+      if (isClosed) {
+        settingsPanel.classList.remove('opacity-0', 'pointer-events-none', 'scale-95');
+        settingsPanel.classList.add('opacity-100', 'scale-100');
+      } else {
+        closeSettings();
+      }
+    });
+
+    function closeSettings() {
+      settingsPanel.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
+      settingsPanel.classList.remove('opacity-100', 'scale-100');
+    }
+    closeSettingsBtn.addEventListener('click', closeSettings);
+
+    // Speed options
+    const speedButtons = document.querySelectorAll('.speed-opt');
+    speedButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        speedButtons.forEach(b => {
+          b.className = "speed-opt py-1.5 rounded-lg border border-white/10 hover:border-violet-500/40 text-slate-400 transition";
+        });
+        btn.className = "speed-opt active-opt py-1.5 rounded-lg border border-violet-500 bg-violet-500/20 text-violet-200 transition";
+
+        const speed = btn.dataset.speed;
+        if (speed === 'fast') {
+          currentSpeedConfig = { idleWait: 1200, fadeDuration: 2000 };
+        } else if (speed === 'slow') {
+          currentSpeedConfig = { idleWait: 6000, fadeDuration: 4500 };
+        } else {
+          currentSpeedConfig = { idleWait: 2800, fadeDuration: 3500 };
+        }
+      });
+    });
+
+    // Theme options
+    const themeButtons = document.querySelectorAll('.theme-opt');
+    themeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        themeButtons.forEach(b => {
+          b.className = "theme-opt py-2 px-1 rounded-lg border border-white/10 hover:border-violet-500/40 text-slate-400 flex flex-col items-center transition";
+        });
+        btn.className = "theme-opt active-opt py-2 px-1 rounded-lg border border-violet-500 bg-violet-500/20 text-violet-200 flex flex-col items-center transition";
+        currentTheme = btn.dataset.theme;
+        glowBackdrop.className = `absolute -inset-1 rounded-3xl bg-gradient-to-r ${PALETTES[currentTheme].glowBackdrop} opacity-0 blur-xl transition-opacity duration-700 pointer-events-none`;
+      });
+    });
+
+    // ASMR Sound Style options
+    const asmrStyleButtons = document.querySelectorAll('.asmr-style-opt');
+    asmrStyleButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        asmrStyleButtons.forEach(b => {
+          b.className = "asmr-style-opt py-1.5 rounded-lg border border-white/10 hover:border-violet-500/40 text-slate-400 transition";
+        });
+        btn.className = "asmr-style-opt active-opt py-1.5 rounded-lg border border-violet-500 bg-violet-500/20 text-violet-200 transition";
+        currentAsmrStyle = btn.dataset.style;
+        initAudio();
+        playAsmrKeystroke(); // Preview sound
+      });
+    });
+
+
+    // --- AMBIENT SOUND GENERATOR & ASMR KEYSTROKE SYNTHESIZER ---
+    let audioCtx = null;
+    let isSoundPlaying = false;
+    let currentSoundMode = 'drone';
+    let masterGain = null;
+    let droneOsc1 = null;
+    let droneOsc2 = null;
+    let noiseNode = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContextClass();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
+        masterGain.connect(audioCtx.destination);
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    // Pentatonic scale frequencies for kalimba ASMR keystrokes (Frequencies in Hz)
+    const KALIMBA_PENTATONIC = [
+      329.63, // E4
+      392.00, // G4
+      440.00, // A4
+      493.88, // B4
+      523.25, // C5
+      587.33, // D5
+      659.25, // E5
+      783.99  // G5
+    ];
+    let noteCursor = 0;
+
+    function playAsmrKeystroke() {
+      initAudio();
+      if (!audioCtx || audioCtx.state !== 'running') return;
+
+      const now = audioCtx.currentTime;
+
+      if (currentAsmrStyle === 'kalimba') {
+        // Pentatonic gentle kalimba tone
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        // Sequential walk across pentatonic scale with slight randomization
+        const freq = KALIMBA_PENTATONIC[noteCursor];
+        noteCursor = (noteCursor + 1 + Math.floor(Math.random() * 2)) % KALIMBA_PENTATONIC.length;
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+
+        gain.gain.setValueAtTime(0.04, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.35);
+
+      } else if (currentAsmrStyle === 'droplet') {
+        // Subtle water droplet plop
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sine';
+        const startFreq = 850 + Math.random() * 200;
+        osc.frequency.setValueAtTime(startFreq, now);
+        osc.frequency.exponentialRampToValueAtTime(320, now + 0.08);
+
+        gain.gain.setValueAtTime(0.05, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.09);
+
+      } else if (currentAsmrStyle === 'wood') {
+        // Muffled wooden tap
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(180 + Math.random() * 40, now);
+        osc.frequency.exponentialRampToValueAtTime(60, now + 0.05);
+
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.06);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.06);
+      }
+    }
+
+    // Toggle ASMR button in header
+    const asmrToggleBtn = document.getElementById('asmrToggleBtn');
+    const asmrBtnLabel = document.getElementById('asmrBtnLabel');
+
+    asmrToggleBtn.addEventListener('click', () => {
+      initAudio();
+      isAsmrTypingActive = !isAsmrTypingActive;
+      if (isAsmrTypingActive) {
+        asmrToggleBtn.classList.add('border-violet-400', 'bg-violet-500/10', 'text-violet-200');
+        asmrBtnLabel.textContent = "เปิดเสียง ASMR";
+        playAsmrKeystroke();
+      } else {
+        asmrToggleBtn.classList.remove('border-violet-400', 'bg-violet-500/10', 'text-violet-200');
+        asmrBtnLabel.textContent = "ปิดเสียง ASMR";
+      }
+    });
+
+    // Default style active for ASMR button
+    asmrToggleBtn.classList.add('border-violet-400', 'bg-violet-500/10', 'text-violet-200');
+
+
+    // 1. Ambient Drone 432Hz
+    function startDroneSound() {
+      stopAudioSources();
+      const now = audioCtx.currentTime;
+      masterGain.gain.cancelScheduledValues(now);
+      masterGain.gain.linearRampToValueAtTime(0.18, now + 1.5);
+
+      droneOsc1 = audioCtx.createOscillator();
+      droneOsc1.type = 'sine';
+      droneOsc1.frequency.setValueAtTime(108, now);
+
+      droneOsc2 = audioCtx.createOscillator();
+      droneOsc2.type = 'sine';
+      droneOsc2.frequency.setValueAtTime(162, now);
+
+      const subOsc = audioCtx.createOscillator();
+      subOsc.type = 'triangle';
+      subOsc.frequency.setValueAtTime(54, now);
+
+      const lowpass = audioCtx.createBiquadFilter();
+      lowpass.type = 'lowpass';
+      lowpass.frequency.setValueAtTime(320, now);
+
+      const oscGain = audioCtx.createGain();
+      oscGain.gain.setValueAtTime(0.3, now);
+
+      droneOsc1.connect(lowpass);
+      droneOsc2.connect(lowpass);
+      subOsc.connect(lowpass);
+      lowpass.connect(oscGain);
+      oscGain.connect(masterGain);
+
+      droneOsc1.start();
+      droneOsc2.start();
+      subOsc.start();
+
+      droneOsc1._nodes = [droneOsc2, subOsc, lowpass, oscGain];
+    }
+
+    // 2. Synthesized Rain
+    function startRainSound() {
+      stopAudioSources();
+      const now = audioCtx.currentTime;
+      masterGain.gain.cancelScheduledValues(now);
+      masterGain.gain.linearRampToValueAtTime(0.15, now + 1.5);
+
+      const bufferSize = audioCtx.sampleRate * 5;
+      const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+      let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        b0 = 0.99886 * b0 + white * 0.0555179;
+        b1 = 0.99332 * b1 + white * 0.0750759;
+        b2 = 0.96900 * b2 + white * 0.1538520;
+        b3 = 0.86650 * b3 + white * 0.3104856;
+        b4 = 0.55000 * b4 + white * 0.5329522;
+        b5 = -0.7616 * b5 - white * 0.0168980;
+        output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.04;
+        b6 = white * 0.115926;
+      }
+
+      noiseNode = audioCtx.createBufferSource();
+      noiseNode.buffer = noiseBuffer;
+      noiseNode.loop = true;
+
+      const rainFilter = audioCtx.createBiquadFilter();
+      rainFilter.type = 'lowpass';
+      rainFilter.frequency.setValueAtTime(800, now);
+
+      noiseNode.connect(rainFilter);
+      rainFilter.connect(masterGain);
+      noiseNode.start();
+
+      noiseNode._nodes = [rainFilter];
+    }
+
+    function stopAudioSources() {
+      if (droneOsc1) {
+        try {
+          droneOsc1.stop();
+          if (droneOsc1._nodes) droneOsc1._nodes.forEach(n => n.disconnect?.() || n.stop?.());
+        } catch (e) {}
+        droneOsc1 = null;
+      }
+      if (noiseNode) {
+        try {
+          noiseNode.stop();
+          if (noiseNode._nodes) noiseNode._nodes.forEach(n => n.disconnect?.() || n.stop?.());
+        } catch (e) {}
+        noiseNode = null;
+      }
+    }
+
+    function stopAudio() {
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      masterGain.gain.cancelScheduledValues(now);
+      masterGain.gain.linearRampToValueAtTime(0, now + 0.8);
+      setTimeout(() => {
+        stopAudioSources();
+      }, 800);
+    }
+
+    function playDissolveChime() {
+      if (!audioCtx || audioCtx.state !== 'running') return;
+      try {
+        const now = audioCtx.currentTime;
+        const chime = audioCtx.createOscillator();
+        const chimeG = audioCtx.createGain();
+        chime.type = 'sine';
+        chime.frequency.setValueAtTime(528, now);
+        chime.frequency.exponentialRampToValueAtTime(432, now + 1.8);
+
+        chimeG.gain.setValueAtTime(0.08, now);
+        chimeG.gain.exponentialRampToValueAtTime(0.0001, now + 2.0);
+
+        chime.connect(chimeG);
+        chimeG.connect(audioCtx.destination);
+        chime.start(now);
+        chime.stop(now + 2.0);
+      } catch (e) {}
+    }
+
+    // UI Sound Elements
+    const soundToggleBtn = document.getElementById('soundToggleBtn');
+    const soundIconOff = document.getElementById('soundIconOff');
+    const soundIconOn = document.getElementById('soundIconOn');
+    const soundLabel = document.getElementById('soundLabel');
+    const optAmbientDrone = document.getElementById('optAmbientDrone');
+    const optAmbientRain = document.getElementById('optAmbientRain');
+
+    soundToggleBtn.addEventListener('click', () => {
+      initAudio();
+      isSoundPlaying = !isSoundPlaying;
+
+      if (isSoundPlaying) {
+        soundIconOff.classList.add('hidden');
+        soundIconOn.classList.remove('hidden');
+        soundLabel.textContent = "เปิดเสียงอยู่";
+
+        if (currentSoundMode === 'drone') {
+          startDroneSound();
+        } else {
+          startRainSound();
+        }
+      } else {
+        soundIconOff.classList.remove('hidden');
+        soundIconOn.classList.add('hidden');
+        soundLabel.textContent = "เสียงบรรยากาศ";
+        stopAudio();
+      }
+    });
+
+    optAmbientDrone.addEventListener('click', () => {
+      currentSoundMode = 'drone';
+      optAmbientDrone.className = "py-1.5 rounded-lg border border-violet-500 bg-violet-500/20 text-violet-200 transition";
+      optAmbientRain.className = "py-1.5 rounded-lg border border-white/10 hover:border-violet-500/40 text-slate-400 transition";
+      if (isSoundPlaying) startDroneSound();
+    });
+
+    optAmbientRain.addEventListener('click', () => {
+      currentSoundMode = 'rain';
+      optAmbientRain.className = "py-1.5 rounded-lg border border-violet-500 bg-violet-500/20 text-violet-200 transition";
+      optAmbientDrone.className = "py-1.5 rounded-lg border border-white/10 hover:border-violet-500/40 text-slate-400 transition";
+      if (isSoundPlaying) startRainSound();
+    });
+
+  </script>
+</body>
+</html>
